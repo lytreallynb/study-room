@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
 
     # --- Auth (Phase 1) ---
-    jwt_secret: str = "dev-insecure-change-me"
+    jwt_secret: str = "dev-insecure-secret-change-me-in-production-0123456789"
     jwt_algorithm: str = "HS256"
     access_token_ttl_minutes: int = 60 * 24
 
