@@ -1,0 +1,62 @@
+# Local dev stack for StudySync.
+#
+# Phase 0 brings up: postgres, redis, api.
+# Later phases add `realtime` (python-socketio) and `worker` (Celery) services —
+# they reuse the same backend image with a different command.
+#
+#   docker compose up --build
+#   curl http://localhost:8000/health
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: studysync
+      POSTGRES_PASSWORD: studysync
+      POSTGRES_DB: studysync
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studysync"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://studysync:studysync@postgres:5432/studysync
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # --- Added in later phases (kept here as documentation) ---
+  # realtime:   # Phase 2 — python-socketio + AsyncRedisManager
+  #   build: ./backend
+  #   command: uv run --no-dev uvicorn app.realtime.asgi:app --host 0.0.0.0 --port 8001
+  #   ...
+  # worker:     # Phase 3 — Celery worker + beat
+  #   build: ./backend
+  #   command: uv run --no-dev celery -A app.workers.celery_app worker -B -l info
+  #   ...
+
+volumes:
+  pgdata:
