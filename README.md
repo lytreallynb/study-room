@@ -81,7 +81,7 @@ curl http://localhost:8000/health
 ## Roadmap
 
 - [x] **Phase 0** — Scaffolding: FastAPI skeleton, config, structured logging, async DB + Alembic, pytest, Docker, CI.
-- [ ] **Phase 1** — Auth (JWT), rooms CRUD, session lifecycle with server-side time validation.
+- [x] **Phase 1** — Auth (JWT + bcrypt), rooms CRUD, session lifecycle with server-side anti-cheat timing, event log, readiness probe, 13 tests.
 - [ ] **Phase 2** — Real-time presence: python-socketio + Redis, multi-instance pub/sub, reconnect recovery.
 - [ ] **Phase 3** — Celery workers: daily aggregation, Redis-cached leaderboard.
 - [ ] **Phase 4** — A/B testing: deterministic bucketing, exposure/metric logging.
