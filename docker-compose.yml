@@ -63,11 +63,18 @@ services:
       redis:
         condition: service_healthy
 
-  # --- Added in later phases (kept here as documentation) ---
-  # worker:     # Phase 3 — Celery worker + beat
-  #   build: ./backend
-  #   command: uv run --no-dev celery -A app.workers.celery_app worker -B -l info
-  #   ...
+  worker:  # Phase 3 — Celery worker + embedded beat
+    build: ./backend
+    command: uv run --no-dev celery -A app.workers.celery_app worker -B -l info
+    environment:
+      DATABASE_URL: postgresql+asyncpg://studysync:studysync@postgres:5432/studysync
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   pgdata:
