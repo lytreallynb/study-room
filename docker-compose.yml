@@ -48,11 +48,22 @@ services:
       redis:
         condition: service_healthy
 
+  realtime:  # Phase 2 — python-socketio + AsyncRedisManager (scale: deploy >1)
+    build: ./backend
+    command: uv run --no-dev uvicorn app.realtime.asgi:app --host 0.0.0.0 --port 8001
+    environment:
+      DATABASE_URL: postgresql+asyncpg://studysync:studysync@postgres:5432/studysync
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: dev
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   # --- Added in later phases (kept here as documentation) ---
-  # realtime:   # Phase 2 — python-socketio + AsyncRedisManager
-  #   build: ./backend
-  #   command: uv run --no-dev uvicorn app.realtime.asgi:app --host 0.0.0.0 --port 8001
-  #   ...
   # worker:     # Phase 3 — Celery worker + beat
   #   build: ./backend
   #   command: uv run --no-dev celery -A app.workers.celery_app worker -B -l info

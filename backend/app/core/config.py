@@ -34,6 +34,15 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_ttl_minutes: int = 60 * 24
 
+    # --- Realtime / presence (Phase 2) ---
+    realtime_port: int = 8001
+    # A member is considered live while their last heartbeat is within this
+    # window; stale members are lazily pruned on read (covers ungraceful drops).
+    presence_ttl_seconds: int = 45
+    # Per-connection token bucket for chatty events (set_status / heartbeat).
+    rate_limit_max_events: int = 30
+    rate_limit_window_seconds: int = 10
+
     # --- Logging ---
     log_level: str = "INFO"
     # Pretty console logs in dev, JSON in prod.
