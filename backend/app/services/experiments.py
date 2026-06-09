@@ -12,6 +12,7 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.metrics import experiment_exposures_total
 from app.models.experiment import (
     Experiment,
     ExperimentAssignment,
@@ -70,6 +71,9 @@ async def get_or_assign(
     )
     await db.commit()
     await db.refresh(assignment)
+    experiment_exposures_total.labels(
+        experiment=experiment.key, variant=variant
+    ).inc()
     return assignment, True
 
 

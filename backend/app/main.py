@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from app import __version__
 from app.api import auth, experiments, health, rooms, sessions, stats
@@ -33,7 +34,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # tightened to the frontend origin in Phase 6
+        allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -46,6 +47,9 @@ def create_app() -> FastAPI:
     app.include_router(stats.router)
     app.include_router(experiments.router)
     app.include_router(experiments.flags_router)
+
+    # Prometheus: auto HTTP metrics + custom business metrics, exposed at /metrics.
+    Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
     return app
 
 

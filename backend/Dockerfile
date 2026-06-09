@@ -19,4 +19,5 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["uv", "run", "--no-dev", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Honor $PORT when the platform injects one (Render/Fly); default to 8000 local.
+CMD ["sh", "-c", "uv run --no-dev uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -92,6 +92,22 @@ docker compose up --build
 curl http://localhost:8000/health
 ```
 
+## Observability
+
+- **Structured logs** — JSON in prod (`LOG_JSON=true`), colored console in dev (structlog).
+- **Metrics** — `GET /metrics` (Prometheus): automatic HTTP request count/latency/in-progress via instrumentator, plus custom business counters (`studysync_sessions_started_total`, `studysync_experiment_exposures_total{experiment,variant}`).
+- **Health** — `/health` (liveness) and `/health/ready` (Postgres + Redis) on the API; `/health` on the realtime service.
+
+## Deploy
+
+One-file [Render Blueprint](./render.yaml) provisions everything (API + realtime + worker + managed Postgres + Redis):
+
+```
+push to GitHub → Render Dashboard → New → Blueprint → select repo
+```
+
+Migrations run automatically before each API release (`preDeployCommand: alembic upgrade head`). `JWT_SECRET` is generated for the API and shared to the realtime service; set `CORS_ORIGINS` to your frontend origin. The same `DATABASE_URL` is normalized per service (asyncpg for the async API/realtime, psycopg for the sync worker). Frontend deploys to Vercel (Phase 5).
+
 ## Roadmap
 
 - [x] **Phase 0** — Scaffolding: FastAPI skeleton, config, structured logging, async DB + Alembic, pytest, Docker, CI.
@@ -99,5 +115,5 @@ curl http://localhost:8000/health
 - [x] **Phase 2** — Real-time presence: python-socketio + `AsyncRedisManager`, JWT handshake auth, join/leave/status, heartbeat + lazy-TTL staleness, room capacity, per-connection rate limiting, snapshot-based reconnect recovery. Includes a **two-instance test proving cross-process pub/sub fan-out**.
 - [x] **Phase 3** — Celery worker + beat (sync psycopg engine): nightly per-user study aggregation (idempotent upserts, completion rate), **Redis-cached leaderboard** (sorted set), `/stats/me` + `/stats/leaderboard` endpoints, 6 tests.
 - [x] **Phase 4** — A/B testing: SHA-256 **deterministic bucketing**, persisted assignments, exposure + outcome metric event log, per-variant results (completion rate), feature flags with **percentage rollouts**, 7 tests.
+- [x] **Phase 6** — Observability (Prometheus `/metrics`: HTTP + custom business counters), production config ($PORT, CORS allowlist, DB-URL normalization, realtime `/health`), one-file **Render Blueprint** (`render.yaml`) provisioning API + realtime + worker + Postgres + Redis.
 - [ ] **Phase 5** — Frontend MVP with animated characters.
-- [ ] **Phase 6** — Deploy + Prometheus metrics + docs.

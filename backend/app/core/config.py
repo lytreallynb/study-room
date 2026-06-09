@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     environment: Literal["dev", "test", "prod"] = "dev"
     debug: bool = True
 
+    # Allowed CORS origins. Dev allows all; set to the frontend origin(s) in
+    # prod, e.g. CORS_ORIGINS='["https://studysync.vercel.app"]'.
+    cors_origins: list[str] = ["*"]
+
     # --- Persistence (used from Phase 1 onward) ---
     # Async SQLAlchemy URL. Defaults to local Postgres; CI/compose override it.
     database_url: str = "postgresql+asyncpg://studysync:studysync@localhost:5432/studysync"
@@ -47,6 +51,25 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     # Pretty console logs in dev, JSON in prod.
     log_json: bool = False
+
+
+    @property
+    def async_database_url(self) -> str:
+        """asyncpg URL for the API. Accepts a bare ``postgresql://`` (e.g. a
+        managed-Postgres connection string) and adds the async driver."""
+        url = self.database_url
+        if url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
+
+    @property
+    def sync_database_url(self) -> str:
+        """psycopg URL for sync Celery workers, from the same DATABASE_URL."""
+        url = self.database_url
+        for prefix in ("postgresql+asyncpg://", "postgresql://"):
+            if url.startswith(prefix):
+                return url.replace(prefix, "postgresql+psycopg://", 1)
+        return url
 
 
 @lru_cache

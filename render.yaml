@@ -1,0 +1,98 @@
+# Render Blueprint — one-file IaC for the whole StudySync backend.
+# Deploy: push to GitHub, then Render Dashboard -> New -> Blueprint -> pick this repo.
+# Provisions: managed Postgres + Redis, and three services (API, realtime, worker)
+# all built from the same backend image with different start commands.
+
+databases:
+  - name: studysync-db
+    plan: free
+    databaseName: studysync
+    user: studysync
+
+services:
+  # --- Redis (presence, pub/sub, cache, Celery broker) ---
+  - type: keyvalue
+    name: studysync-redis
+    plan: free
+    ipAllowList: []          # internal-only
+    maxmemoryPolicy: noeviction
+
+  # --- REST API (FastAPI) ---
+  - type: web
+    name: studysync-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    preDeployCommand: uv run --no-dev alembic upgrade head   # run migrations before going live
+    envVars:
+      - key: ENVIRONMENT
+        value: prod
+      - key: LOG_JSON
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false          # set to the frontend origin, e.g. ["https://studysync.vercel.app"]
+      - key: DATABASE_URL
+        fromDatabase:
+          name: studysync-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: studysync-redis
+          property: connectionString
+
+  # --- Realtime presence (python-socketio); scale: bump numInstances ---
+  - type: web
+    name: studysync-realtime
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    dockerCommand: sh -c "uv run --no-dev uvicorn app.realtime.asgi:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: prod
+      - key: LOG_JSON
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: studysync-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: studysync-redis
+          property: connectionString
+      - key: JWT_SECRET     # must match the API's secret to validate its tokens
+        fromService:
+          type: web
+          name: studysync-api
+          envVarKey: JWT_SECRET
+
+  # --- Celery worker + beat (daily aggregation, leaderboard, metric rollups) ---
+  - type: worker
+    name: studysync-worker
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    dockerCommand: uv run --no-dev celery -A app.workers.celery_app worker -B -l info
+    envVars:
+      - key: ENVIRONMENT
+        value: prod
+      - key: LOG_JSON
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: studysync-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: studysync-redis
+          property: connectionString

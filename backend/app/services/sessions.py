@@ -16,6 +16,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.metrics import sessions_started_total
 from app.models.room import Room
 from app.models.session import (
     SessionEvent,
@@ -86,6 +87,7 @@ async def start_session(
     db.add(SessionEvent(session_id=session.id, type=SessionEventType.start, ts=now))
     await db.commit()
     await db.refresh(session)
+    sessions_started_total.inc()
     return session
 
 
