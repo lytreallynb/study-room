@@ -3,6 +3,13 @@ metadata.create_all() see the full schema."""
 
 from app.models.aggregate import DailyStudyAggregate
 from app.models.base import Base
+from app.models.experiment import (
+    Experiment,
+    ExperimentAssignment,
+    FeatureFlag,
+    MetricEvent,
+    MetricEventType,
+)
 from app.models.room import Room
 from app.models.session import (
     SessionEvent,
@@ -21,4 +28,9 @@ __all__ = [
     "SessionStatus",
     "SessionEventType",
     "DailyStudyAggregate",
+    "Experiment",
+    "ExperimentAssignment",
+    "MetricEvent",
+    "MetricEventType",
+    "FeatureFlag",
 ]

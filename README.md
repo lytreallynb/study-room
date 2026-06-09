@@ -98,6 +98,6 @@ curl http://localhost:8000/health
 - [x] **Phase 1** — Auth (JWT + bcrypt), rooms CRUD, session lifecycle with server-side anti-cheat timing, event log, readiness probe, 13 tests.
 - [x] **Phase 2** — Real-time presence: python-socketio + `AsyncRedisManager`, JWT handshake auth, join/leave/status, heartbeat + lazy-TTL staleness, room capacity, per-connection rate limiting, snapshot-based reconnect recovery. Includes a **two-instance test proving cross-process pub/sub fan-out**.
 - [x] **Phase 3** — Celery worker + beat (sync psycopg engine): nightly per-user study aggregation (idempotent upserts, completion rate), **Redis-cached leaderboard** (sorted set), `/stats/me` + `/stats/leaderboard` endpoints, 6 tests.
-- [ ] **Phase 4** — A/B testing: deterministic bucketing, exposure/metric logging.
+- [x] **Phase 4** — A/B testing: SHA-256 **deterministic bucketing**, persisted assignments, exposure + outcome metric event log, per-variant results (completion rate), feature flags with **percentage rollouts**, 7 tests.
 - [ ] **Phase 5** — Frontend MVP with animated characters.
 - [ ] **Phase 6** — Deploy + Prometheus metrics + docs.
