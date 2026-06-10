@@ -106,7 +106,9 @@ One-file [Render Blueprint](./render.yaml) provisions everything (API + realtime
 push to GitHub → Render Dashboard → New → Blueprint → select repo
 ```
 
-Migrations run automatically before each API release (`preDeployCommand: alembic upgrade head`). `JWT_SECRET` is generated for the API and shared to the realtime service; set `CORS_ORIGINS` to your frontend origin. The same `DATABASE_URL` is normalized per service (asyncpg for the async API/realtime, psycopg for the sync worker). Frontend deploys to Vercel (Phase 5).
+Migrations run on API start (`alembic upgrade head && uvicorn ...`). `JWT_SECRET` is generated for the API and shared to the realtime service; set `CORS_ORIGINS` to your frontend origin. The same `DATABASE_URL` is normalized per service (asyncpg for the async API/realtime, psycopg for the sync worker).
+
+**Free tier:** API + realtime + Postgres + Redis run on Render's free plan. The Celery **worker is paid-only** on Render (no free worker plan), so it's documented (commented) in the blueprint — enable it on a paid plan, or run it locally against the production `DATABASE_URL`/`REDIS_URL`. The live API + real-time presence demo works fully without it. Frontend deploys to Vercel (Phase 5).
 
 ## Roadmap
 

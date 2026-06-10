@@ -1,7 +1,11 @@
-# Render Blueprint — one-file IaC for the whole StudySync backend.
+# Render Blueprint — one-file IaC for the StudySync backend.
 # Deploy: push to GitHub, then Render Dashboard -> New -> Blueprint -> pick this repo.
-# Provisions: managed Postgres + Redis, and three services (API, realtime, worker)
-# all built from the same backend image with different start commands.
+#
+# Free-tier set: API + realtime + managed Postgres + Redis (Key Value).
+# The Celery worker has NO free plan on Render (workers are paid-only), so it is
+# documented at the bottom — enable it on a paid plan, or run it locally against
+# the production DATABASE_URL/REDIS_URL. The worker only powers nightly rollups;
+# the live API + realtime demo works fully without it.
 
 databases:
   - name: studysync-db
@@ -10,14 +14,14 @@ databases:
     user: studysync
 
 services:
-  # --- Redis (presence, pub/sub, cache, Celery broker) ---
+  # --- Redis / Key Value (presence, pub/sub, cache, Celery broker) ---
   - type: keyvalue
     name: studysync-redis
     plan: free
     ipAllowList: []          # internal-only
     maxmemoryPolicy: noeviction
 
-  # --- REST API (FastAPI) ---
+  # --- REST API (FastAPI). Runs migrations on start, then serves. ---
   - type: web
     name: studysync-api
     runtime: docker
@@ -25,7 +29,7 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /health
-    preDeployCommand: uv run --no-dev alembic upgrade head   # run migrations before going live
+    dockerCommand: sh -c "uv run --no-dev alembic upgrade head && uv run --no-dev uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: ENVIRONMENT
         value: prod
@@ -45,7 +49,7 @@ services:
           name: studysync-redis
           property: connectionString
 
-  # --- Realtime presence (python-socketio); scale: bump numInstances ---
+  # --- Realtime presence (python-socketio); scale by raising the instance count ---
   - type: web
     name: studysync-realtime
     runtime: docker
@@ -74,25 +78,20 @@ services:
           name: studysync-api
           envVarKey: JWT_SECRET
 
-  # --- Celery worker + beat (daily aggregation, leaderboard, metric rollups) ---
-  - type: worker
-    name: studysync-worker
-    runtime: docker
-    plan: free
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
-    dockerCommand: uv run --no-dev celery -A app.workers.celery_app worker -B -l info
-    envVars:
-      - key: ENVIRONMENT
-        value: prod
-      - key: LOG_JSON
-        value: "true"
-      - key: DATABASE_URL
-        fromDatabase:
-          name: studysync-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: keyvalue
-          name: studysync-redis
-          property: connectionString
+# --- Celery worker + beat (paid-only on Render; not in the free set) ----------
+# Add this under `services:` on a paid plan to enable nightly aggregation +
+# leaderboard rollups. Locally you can instead run it against the prod URLs:
+#   DATABASE_URL=... REDIS_URL=... uv run celery -A app.workers.celery_app worker -B -l info
+#
+#  - type: worker
+#    name: studysync-worker
+#    runtime: docker
+#    plan: starter            # workers have no free plan
+#    dockerfilePath: ./backend/Dockerfile
+#    dockerContext: ./backend
+#    dockerCommand: uv run --no-dev celery -A app.workers.celery_app worker -B -l info
+#    envVars:
+#      - key: DATABASE_URL
+#        fromDatabase: { name: studysync-db, property: connectionString }
+#      - key: REDIS_URL
+#        fromService: { type: keyvalue, name: studysync-redis, property: connectionString }
