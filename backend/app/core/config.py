@@ -4,10 +4,12 @@ Defaults are dev-friendly so the app and the Phase 0 health test boot with no
 external services. Production overrides everything via environment variables.
 """
 
+import json
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -24,7 +26,23 @@ class Settings(BaseSettings):
 
     # Allowed CORS origins. Dev allows all; set to the frontend origin(s) in
     # prod, e.g. CORS_ORIGINS='["https://studysync.vercel.app"]'.
-    cors_origins: list[str] = ["*"]
+    # NoDecode: take the raw env string (so a bare "*" is valid) and let the
+    # validator below parse it — pydantic-settings would otherwise JSON-decode it.
+    cors_origins: Annotated[list[str], NoDecode] = ["*"]
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _parse_cors_origins(cls, v: object) -> object:
+        """Accept a JSON list (``["https://a"]``), a comma-separated string
+        (``https://a,https://b``), or a bare value (``*``)."""
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return ["*"]
+            if v.startswith("["):
+                return json.loads(v)
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
 
     # --- Persistence (used from Phase 1 onward) ---
     # Async SQLAlchemy URL. Defaults to local Postgres; CI/compose override it.
