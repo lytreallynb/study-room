@@ -29,7 +29,8 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /health
-    dockerCommand: sh -c "uv run --no-dev alembic upgrade head && uv run --no-dev uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    # Render runs this in a shell, so `&&` and $PORT work — do NOT wrap in `sh -c`.
+    dockerCommand: uv run --no-dev alembic upgrade head && uv run --no-dev uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ENVIRONMENT
         value: prod
@@ -56,7 +57,7 @@ services:
     plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
-    dockerCommand: sh -c "uv run --no-dev uvicorn app.realtime.asgi:app --host 0.0.0.0 --port $PORT"
+    dockerCommand: uv run --no-dev uvicorn app.realtime.asgi:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: ENVIRONMENT
