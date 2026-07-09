@@ -121,3 +121,30 @@ async def list_members(
 
 async def member_count(room_id: str, *, redis: Redis | None = None) -> int:
     return len(await list_members(room_id, redis=redis))
+
+
+async def member_counts(
+    room_ids: list[str], *, redis: Redis | None = None
+) -> dict[str, int]:
+    """Live member count for many rooms in one pipelined round trip.
+
+    Read-only: stale members are excluded from the count but not pruned
+    (list_members handles pruning on the hot per-room path).
+    """
+    if not room_ids:
+        return {}
+    r = _client(redis)
+    pipe = r.pipeline(transaction=False)
+    for room_id in room_ids:
+        pipe.hgetall(_key(room_id))
+    hashes = await pipe.execute()
+    now = _now()
+    counts: dict[str, int] = {}
+    for room_id, raw in zip(room_ids, hashes):
+        live = 0
+        for value in raw.values():
+            member = json.loads(value)
+            if now - member.get("last_seen", 0) <= settings.presence_ttl_seconds:
+                live += 1
+        counts[room_id] = live
+    return counts

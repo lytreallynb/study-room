@@ -32,12 +32,21 @@ interface RoomSnapshot {
 
 export type PresenceConnState = "connecting" | "live" | "error";
 
-export function useRoomPresence(roomId: string) {
+export function useRoomPresence(roomId: string, selfId?: string) {
   const [members, setMembers] = useState<Member[]>([]);
   const [connState, setConnState] = useState<PresenceConnState>("connecting");
   const [roomError, setRoomError] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
-  const statusRef = useRef<PresenceStatus>("focusing");
+  // Idle until a session says otherwise: walking into a room must not turn
+  // your lamp on.
+  const statusRef = useRef<PresenceStatus>("idle");
+  // True once the server has confirmed our membership with a snapshot;
+  // set_status before that would race the join and bounce with "not in room".
+  const joinedRef = useRef(false);
+  const selfIdRef = useRef(selfId);
+  useEffect(() => {
+    selfIdRef.current = selfId;
+  }, [selfId]);
 
   useEffect(() => {
     const token = getToken();
@@ -50,6 +59,7 @@ export function useRoomPresence(roomId: string) {
     socket.on("connect", () => {
       // Initial join and reconnect recovery share one path: join again and
       // let the snapshot replace whatever state we had.
+      joinedRef.current = false;
       socket.emit("join_room", { room_id: roomId, status: statusRef.current });
     });
 
@@ -58,6 +68,16 @@ export function useRoomPresence(roomId: string) {
       setMembers(snap.members);
       setConnState("live");
       setRoomError(null);
+      joinedRef.current = true;
+      // Reconcile: if our status changed while the join was in flight, the
+      // snapshot carries the stale one; announce the current one now.
+      const self = snap.members.find((m) => m.user_id === selfIdRef.current);
+      if (self && self.status !== statusRef.current) {
+        socket.emit("set_status", {
+          room_id: roomId,
+          status: statusRef.current,
+        });
+      }
     });
 
     socket.on("presence_update", (update: PresenceUpdate) => {
@@ -83,7 +103,14 @@ export function useRoomPresence(roomId: string) {
     socket.on("disconnect", () => setConnState("connecting"));
 
     const beat = setInterval(() => {
-      if (socket.connected) socket.emit("heartbeat", { room_id: roomId });
+      // Status rides along so the server can re-add us if another connection
+      // of the same account evicted our presence entry.
+      if (socket.connected) {
+        socket.emit("heartbeat", {
+          room_id: roomId,
+          status: statusRef.current,
+        });
+      }
     }, HEARTBEAT_MS);
 
     return () => {
@@ -97,7 +124,11 @@ export function useRoomPresence(roomId: string) {
   const setStatus = useCallback(
     (status: PresenceStatus) => {
       statusRef.current = status;
-      socketRef.current?.emit("set_status", { room_id: roomId, status });
+      // Before the snapshot confirms membership, just remember the status:
+      // the pending join (or its reconciliation) will deliver it.
+      if (joinedRef.current) {
+        socketRef.current?.emit("set_status", { room_id: roomId, status });
+      }
     },
     [roomId],
   );

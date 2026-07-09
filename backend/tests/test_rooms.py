@@ -4,7 +4,7 @@ from httpx import AsyncClient
 
 
 async def test_create_and_list_room(
-    client: AsyncClient, auth_headers: dict[str, str]
+    client: AsyncClient, auth_headers: dict[str, str], async_redis
 ) -> None:
     create = await client.post(
         "/rooms",

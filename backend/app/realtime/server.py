@@ -167,8 +167,26 @@ def build_server() -> socketio.AsyncServer:
             return
         session = await sio.get_session(sid)
         room_id = (data or {}).get("room_id")
-        if room_id:
-            await presence.heartbeat(room_id, session["user_id"])
+        if not room_id:
+            return
+        alive = await presence.heartbeat(room_id, session["user_id"])
+        if not alive and room_id in session["rooms"]:
+            # Self-heal: presence is keyed by user_id, so another connection
+            # of the same account disconnecting evicts this one too. Re-add
+            # and re-announce so the room recovers within one heartbeat.
+            status = (data or {}).get("status", "idle")
+            member = await presence.add_member(
+                room_id,
+                session["user_id"],
+                session["display_name"],
+                session["character"],
+                status=status if status in presence.VALID_STATUSES else "idle",
+            )
+            await sio.emit(
+                "presence_update",
+                {"room_id": room_id, "event": "join", "member": member},
+                room=room_id,
+            )
 
     @sio.event
     async def leave_room(sid: str, data: dict) -> None:

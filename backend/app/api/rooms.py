@@ -4,6 +4,7 @@ handled by the realtime service in Phase 2)."""
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
+from redis.exceptions import RedisError
 from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbSession
@@ -42,10 +43,16 @@ async def list_rooms(
         .order_by(Room.created_at.desc())
     )
     rooms = list(result.scalars().all())
+    try:
+        counts = await presence.member_counts([str(room.id) for room in rooms])
+    except RedisError:
+        # Presence is decoration here; the directory must survive Redis being
+        # down since room data lives in Postgres.
+        counts = {}
     return [
         RoomWithOccupancy(
             **RoomRead.model_validate(room).model_dump(),
-            occupancy=await presence.member_count(str(room.id)),
+            occupancy=counts.get(str(room.id), 0),
         )
         for room in rooms
     ]

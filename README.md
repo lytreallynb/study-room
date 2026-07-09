@@ -93,6 +93,13 @@ uv run uvicorn app.realtime.asgi:app --port 8002   # second instance, same Redis
 uv run celery -A app.workers.celery_app worker -B -l info
 ```
 
+**End-to-end smoke test** (two headless browsers proving live presence;
+needs API + realtime + frontend running):
+
+```bash
+uv run --with playwright python scripts/e2e_smoke.py   # E2E_BASE_URL to override :3000
+```
+
 **Full stack (needs Docker):**
 
 ```bash

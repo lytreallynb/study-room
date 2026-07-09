@@ -19,7 +19,10 @@ function RoomView({ roomId }: { roomId: string }) {
   const { user } = useAuth();
   const [room, setRoom] = useState<Room | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const { members, connState, roomError, setStatus } = useRoomPresence(roomId);
+  const { members, connState, roomError, setStatus } = useRoomPresence(
+    roomId,
+    user?.id,
+  );
 
   useEffect(() => {
     api

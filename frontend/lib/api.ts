@@ -54,12 +54,21 @@ async function request<T>(
 
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
   if (!res.ok) {
-    let detail = res.statusText;
+    // statusText is empty over HTTP/2, so always have a real fallback.
+    let detail = `Request failed (${res.status})`;
     try {
       const body = await res.json();
-      if (typeof body.detail === "string") detail = body.detail;
+      if (typeof body.detail === "string") {
+        detail = body.detail;
+      } else if (Array.isArray(body.detail)) {
+        // FastAPI validation errors (422) carry a list of {loc, msg, type}.
+        const msgs = body.detail
+          .map((d: { msg?: string }) => d.msg)
+          .filter(Boolean);
+        if (msgs.length > 0) detail = msgs.join("; ");
+      }
     } catch {
-      // keep statusText
+      // keep fallback
     }
     throw new ApiError(res.status, detail);
   }

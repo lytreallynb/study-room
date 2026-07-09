@@ -41,23 +41,28 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [restored, setRestored] = useState(false);
+  const [openElsewhere, setOpenElsewhere] = useState(false);
 
   // Pick up an in-progress session after a reload (start is 409 otherwise).
+  // Only adopt a session that belongs to THIS room; one running elsewhere
+  // must not light our lamp here or get mutated from the wrong room.
   useEffect(() => {
     api
       .listSessions()
       .then((sessions) => {
         const open = sessions.find((s) => s.status !== "ended");
-        if (open) {
+        if (open && open.room_id === roomId) {
           setSession(open);
           onPresenceChange(open.status === "active" ? "focusing" : "break");
+        } else if (open) {
+          setOpenElsewhere(true);
         }
       })
       .catch(() => {
         // history is non-critical; Start will surface any real problem
       })
       .finally(() => setRestored(true));
-  }, [onPresenceChange]);
+  }, [onPresenceChange, roomId]);
 
   // The display derives from (session, now); only the clock lives in state.
   useEffect(() => {
@@ -119,7 +124,12 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
       )}
 
       <div className="mt-5 flex flex-wrap gap-2">
-        {!running ? (
+        {openElsewhere ? (
+          <p className="text-sm text-ink-dim">
+            You have a session running at another desk. End it there before
+            starting one here.
+          </p>
+        ) : !running ? (
           <button
             className={`${btn} bg-lamp text-night hover:brightness-110`}
             disabled={busy || !restored}

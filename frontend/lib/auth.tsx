@@ -37,17 +37,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Without a stored token this 401s immediately and settles to anonymous.
+    let cancelled = false;
+    if (!api.getToken()) {
+      // Settle to anonymous without a doomed request (async to satisfy the
+      // no-setState-in-effect rule).
+      Promise.resolve().then(() => {
+        if (!cancelled) setStatus("anonymous");
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
     api
       .me()
       .then((u) => {
+        if (cancelled) return;
         setUser(u);
         setStatus("authenticated");
       })
-      .catch(() => {
-        api.clearToken();
+      .catch((err) => {
+        if (cancelled) return;
+        // Only a rejected token means logged out; a network error or 5xx
+        // must not delete a still-valid token.
+        if (err instanceof api.ApiError && err.status === 401) {
+          api.clearToken();
+        }
         setStatus("anonymous");
       });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
