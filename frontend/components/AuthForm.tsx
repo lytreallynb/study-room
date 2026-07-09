@@ -40,14 +40,14 @@ export default function AuthForm({ mode }: Props) {
   }
 
   const inputCls =
-    "w-full rounded-lg border border-night-line bg-night px-3.5 py-2.5 text-paper placeholder:text-ink-dim/60";
+    "w-full rounded-lg border border-line bg-white/70 px-3.5 py-2.5 text-ink placeholder:text-muted/60";
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="font-display text-3xl font-semibold text-paper">
+      <h1 className="font-display text-3xl font-semibold text-ink">
         {mode === "register" ? "Take a seat" : "Welcome back"}
       </h1>
-      <p className="mt-2 text-sm text-ink-dim">
+      <p className="mt-2 text-sm text-muted">
         {mode === "register"
           ? "Pick a name for your desk. Your character is waiting."
           : "Your desk is where you left it."}
@@ -55,7 +55,7 @@ export default function AuthForm({ mode }: Props) {
 
       <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4">
         {mode === "register" && (
-          <label className="flex flex-col gap-1.5 text-sm text-ink-dim">
+          <label className="flex flex-col gap-1.5 text-sm text-muted">
             Display name
             <input
               className={inputCls}
@@ -67,7 +67,7 @@ export default function AuthForm({ mode }: Props) {
             />
           </label>
         )}
-        <label className="flex flex-col gap-1.5 text-sm text-ink-dim">
+        <label className="flex flex-col gap-1.5 text-sm text-muted">
           Email
           <input
             className={inputCls}
@@ -78,7 +78,7 @@ export default function AuthForm({ mode }: Props) {
             required
           />
         </label>
-        <label className="flex flex-col gap-1.5 text-sm text-ink-dim">
+        <label className="flex flex-col gap-1.5 text-sm text-muted">
           Password
           <input
             className={inputCls}
@@ -96,7 +96,7 @@ export default function AuthForm({ mode }: Props) {
         <button
           type="submit"
           disabled={busy}
-          className="mt-2 rounded-full bg-lamp py-2.5 font-bold text-night hover:brightness-110 disabled:opacity-50"
+          className="mt-2 rounded-full bg-sun py-2.5 font-bold text-white hover:brightness-110 disabled:opacity-50"
         >
           {busy
             ? "One moment"
@@ -106,18 +106,18 @@ export default function AuthForm({ mode }: Props) {
         </button>
       </form>
 
-      <p className="mt-6 text-sm text-ink-dim">
+      <p className="mt-6 text-sm text-muted">
         {mode === "register" ? (
           <>
             Already have a desk?{" "}
-            <Link href="/login" className="text-lamp hover:underline">
+            <Link href="/login" className="text-sun hover:underline">
               Log in
             </Link>
           </>
         ) : (
           <>
             First time here?{" "}
-            <Link href="/register" className="text-lamp hover:underline">
+            <Link href="/register" className="text-sun hover:underline">
               Take a seat
             </Link>
           </>

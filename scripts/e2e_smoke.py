@@ -140,8 +140,8 @@ def main() -> int:
 
         # Adventure map: the review XP puts A's traveler on the road
         a.goto(f"{BASE}/adventure")
-        expect(a.get_by_text("The night road")).to_be_visible(timeout=10000)
-        expect(a.get_by_text("Dorm Desk")).to_be_visible()
+        expect(a.get_by_text("The coast road")).to_be_visible(timeout=10000)
+        expect(a.get_by_text("Window Desk")).to_be_visible()
         expect(a.get_by_text("xp total")).to_be_visible()
         a.screenshot(path=f"{SHOTS}/05-adventure.png", full_page=True)
         print("ok: adventure map renders with progress")

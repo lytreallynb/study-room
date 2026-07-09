@@ -18,7 +18,7 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
 
   if (status !== "authenticated") {
     return (
-      <main className="flex flex-1 items-center justify-center text-ink-dim">
+      <main className="flex flex-1 items-center justify-center text-muted">
         Unlocking the study hall...
       </main>
     );

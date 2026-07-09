@@ -41,10 +41,10 @@ function StatsView() {
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
-      <h1 className="font-display text-3xl font-semibold text-paper">
+      <h1 className="font-display text-3xl font-semibold text-ink">
         My desk
       </h1>
-      <p className="mt-1 text-sm text-ink-dim">
+      <p className="mt-1 text-sm text-muted">
         Totals are tallied overnight, so today shows up tomorrow.
       </p>
 
@@ -70,10 +70,10 @@ function StatsView() {
             ].map((s) => (
               <div
                 key={s.label}
-                className="rounded-2xl border border-night-line bg-night-raised p-5"
+                className="glass rounded-3xl p-5"
               >
-                <p className="font-mono text-3xl text-lamp">{s.value}</p>
-                <p className="mt-1 text-xs uppercase tracking-widest text-ink-dim">
+                <p className="font-mono text-3xl text-sun">{s.value}</p>
+                <p className="mt-1 text-xs uppercase tracking-widest text-muted">
                   {s.label}
                 </p>
               </div>
@@ -81,14 +81,14 @@ function StatsView() {
           </section>
 
           {/* daily log */}
-          <section className="rounded-2xl border border-night-line bg-night-raised p-6">
-            <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-ink-dim">
+          <section className="glass rounded-3xl p-6">
+            <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
               last 30 nights
             </h2>
             {stats === null ? (
-              <p className="mt-4 text-ink-dim">Opening the ledger...</p>
+              <p className="mt-4 text-muted">Opening the ledger...</p>
             ) : stats.days.length === 0 ? (
-              <p className="mt-4 text-sm text-ink-dim">
+              <p className="mt-4 text-sm text-muted">
                 Nothing tallied yet. Finish a session tonight and it lands
                 here after the nightly rollup.
               </p>
@@ -99,12 +99,12 @@ function StatsView() {
                     key={d.date}
                     className="grid grid-cols-[6.5rem_1fr_4rem] items-center gap-3 text-sm"
                   >
-                    <span className="font-mono text-xs text-ink-dim">
+                    <span className="font-mono text-xs text-muted">
                       {d.date}
                     </span>
-                    <span className="h-2 overflow-hidden rounded-full bg-night">
+                    <span className="h-2 overflow-hidden rounded-full bg-white/70">
                       <span
-                        className="block h-full rounded-full bg-lamp"
+                        className="block h-full rounded-full bg-sun"
                         style={{
                           width: `${Math.max(
                             3,
@@ -113,7 +113,7 @@ function StatsView() {
                         }}
                       />
                     </span>
-                    <span className="text-right font-mono text-xs text-paper">
+                    <span className="text-right font-mono text-xs text-ink">
                       {fmtHours(d.total_focus_seconds)}
                     </span>
                   </li>
@@ -124,14 +124,14 @@ function StatsView() {
         </div>
 
         {/* leaderboard */}
-        <section className="h-fit rounded-2xl border border-night-line bg-night-raised p-6">
-          <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-ink-dim">
+        <section className="h-fit glass rounded-3xl p-6">
+          <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
             hall of focus
           </h2>
           {board === null ? (
-            <p className="mt-4 text-ink-dim">...</p>
+            <p className="mt-4 text-muted">...</p>
           ) : board.length === 0 ? (
-            <p className="mt-4 text-sm text-ink-dim">
+            <p className="mt-4 text-sm text-muted">
               No names on the board yet. The first nightly tally writes it.
             </p>
           ) : (
@@ -143,7 +143,7 @@ function StatsView() {
                 >
                   <span
                     className={`w-6 text-right font-mono ${
-                      entry.rank === 1 ? "text-lamp" : "text-ink-dim"
+                      entry.rank === 1 ? "text-sun" : "text-muted"
                     }`}
                   >
                     {entry.rank}
@@ -151,13 +151,13 @@ function StatsView() {
                   <span
                     className={`flex-1 truncate ${
                       entry.user_id === user?.id
-                        ? "font-bold text-lamp"
-                        : "text-paper"
+                        ? "font-bold text-sun"
+                        : "text-ink"
                     }`}
                   >
                     {entry.display_name}
                   </span>
-                  <span className="font-mono text-xs text-ink-dim">
+                  <span className="font-mono text-xs text-muted">
                     {fmtHours(entry.focus_seconds)}
                   </span>
                 </li>

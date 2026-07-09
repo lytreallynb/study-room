@@ -1,28 +1,28 @@
 @import "tailwindcss";
 
-/* StudySync "night study hall" tokens.
-   Deep indigo night, warm paper text, amber lamp glow for focus,
-   mint for breaks. */
+/* StudySync "seaside study room" tokens.
+   A calm daytime coast: pale sky into sea into sand, warm sun accent,
+   deep sea-slate ink, frosted-glass panels with generous corners. */
 :root {
-  --night: #171b2e;
-  --night-raised: #212741;
-  --night-line: #303752;
-  --paper: #f2ede3;
-  --ink-dim: #8b91ad;
-  --lamp: #ffb454;
-  --lamp-soft: #ffb45426;
-  --mint: #7fd1ae;
-  --coral: #e89c9c;
+  --base: #f6fbfd;
+  --surface: #ffffff;
+  --line: #b9d9e2;
+  --ink: #1f4254;
+  --muted: #58808f;
+  --sun: #ef8a47;
+  --sun-soft: #ef8a4726;
+  --mint: #2f9e85;
+  --coral: #d95f49;
 }
 
 @theme inline {
-  --color-night: var(--night);
-  --color-night-raised: var(--night-raised);
-  --color-night-line: var(--night-line);
-  --color-paper: var(--paper);
-  --color-ink-dim: var(--ink-dim);
-  --color-lamp: var(--lamp);
-  --color-lamp-soft: var(--lamp-soft);
+  --color-base: var(--base);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-sun: var(--sun);
+  --color-sun-soft: var(--sun-soft);
   --color-mint: var(--mint);
   --color-coral: var(--coral);
   --font-display: var(--font-fraunces);
@@ -31,13 +31,84 @@
 }
 
 html {
-  background: var(--night);
+  background: var(--base);
 }
 
 body {
-  background: var(--night);
-  color: var(--paper);
+  color: var(--ink);
   font-family: var(--font-karla), system-ui, sans-serif;
+  /* the view from the desk: morning sun, sky, sea, a strip of sand */
+  background:
+    radial-gradient(
+      circle at 80% 12%,
+      #ffe6bf 0%,
+      rgba(255, 230, 191, 0.55) 12%,
+      rgba(255, 230, 191, 0) 34%
+    ),
+    linear-gradient(
+      180deg,
+      #eef8fb 0%,
+      #ddf1f7 34%,
+      #bde4ee 52%,
+      #93cfdf 62%,
+      #7cc3d6 72%,
+      #a9dbe3 78%,
+      #f4ecd9 96%,
+      #f1e6cd 100%
+    );
+  background-attachment: fixed;
+}
+
+/* frosted glass panel: the standard container of the app */
+.glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 32px rgba(31, 66, 84, 0.1);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(31, 66, 84, 0.1);
+}
+
+/* --- ambient waves along the horizon --- */
+
+@keyframes wavedrift {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.wave-layer {
+  position: fixed;
+  left: 0;
+  width: 200%;
+  height: 42px;
+  pointer-events: none;
+  background-repeat: repeat-x;
+  background-size: 220px 42px;
+}
+
+.wave-back {
+  top: calc(62vh - 20px);
+  opacity: 0.35;
+  animation: wavedrift 26s linear infinite;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 42'%3E%3Cpath d='M0 22 Q27 8 55 22 T110 22 T165 22 T220 22 V42 H0 Z' fill='%23ffffff'/%3E%3C/svg%3E");
+}
+
+.wave-front {
+  top: calc(62vh + 2px);
+  opacity: 0.25;
+  animation: wavedrift 17s linear infinite reverse;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 42'%3E%3Cpath d='M0 24 Q27 12 55 24 T110 24 T165 24 T220 24 V42 H0 Z' fill='%23ffffff'/%3E%3C/svg%3E");
 }
 
 /* --- character animations --- */
@@ -253,16 +324,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .anim-coinpop,
-  .anim-levelup,
-  .anim-cardflip,
-  .anim-floatup,
-  .anim-walkbob {
-    animation: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
   .anim-breathe,
   .anim-sway,
   .anim-doze,
@@ -271,13 +332,20 @@ body {
   .anim-steam,
   .anim-steam-late,
   .anim-blink,
-  .anim-lampglow {
+  .anim-lampglow,
+  .anim-coinpop,
+  .anim-levelup,
+  .anim-cardflip,
+  .anim-floatup,
+  .anim-walkbob,
+  .wave-back,
+  .wave-front {
     animation: none;
   }
 }
 
-/* visible keyboard focus on the dark ground */
+/* visible keyboard focus on the light ground */
 :focus-visible {
-  outline: 2px solid var(--lamp);
+  outline: 2px solid var(--sun);
   outline-offset: 2px;
 }

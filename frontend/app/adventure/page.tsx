@@ -1,7 +1,7 @@
 "use client";
 
-// The adventure map: your character walks a night road from the dorm desk to
-// the summit, powered entirely by XP (focused minutes + word reviews).
+// The adventure map: your character walks the coast road from the window
+// desk to the horizon, powered entirely by XP (focused minutes + reviews).
 // Progress is server-derived; this page just draws where you are.
 
 import { useEffect, useState } from "react";
@@ -23,13 +23,13 @@ interface Stop {
 }
 
 const STOPS: Stop[] = [
-  { level: 1, name: "Dorm Desk", blurb: "Where every journey starts." },
-  { level: 2, name: "Campus Library", blurb: "Two focused hours got you here." },
-  { level: 3, name: "Midnight Cafe", blurb: "The regulars nod. You belong." },
-  { level: 5, name: "City Rooftop", blurb: "The town looks small from up here." },
-  { level: 8, name: "Mountain Trail", blurb: "Thin air, thick vocabulary." },
+  { level: 1, name: "Window Desk", blurb: "Where every journey starts." },
+  { level: 2, name: "Boardwalk Library", blurb: "Two focused hours got you here." },
+  { level: 3, name: "Tide-pool Cafe", blurb: "The regulars nod. You belong." },
+  { level: 5, name: "Harbor Rooftop", blurb: "The boats look small from up here." },
+  { level: 8, name: "Cliff Trail", blurb: "Salt air, thick vocabulary." },
   { level: 12, name: "The Lighthouse", blurb: "You keep other ships focused now." },
-  { level: 20, name: "The Summit", blurb: "Legend of the study hall." },
+  { level: 20, name: "Horizon Point", blurb: "Legend of the seaside study room." },
 ];
 
 function Traveler({ userId }: { userId: string }) {
@@ -101,23 +101,23 @@ function AdventureView() {
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
-      <h1 className="font-display text-3xl font-semibold text-paper">
-        The night road
+      <h1 className="font-display text-3xl font-semibold text-ink">
+        The coast road
       </h1>
-      <p className="mt-1 max-w-xl text-sm text-ink-dim">
+      <p className="mt-1 max-w-xl text-sm text-muted">
         Every focused minute and every word you remember moves your character
         down the road. No shortcuts; the server keeps the ledger.
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
-        <span className="rounded-full bg-night-raised px-3 py-1 font-mono text-xs text-mint">
+        <span className="rounded-full bg-white/60 px-3 py-1 font-mono text-xs text-mint">
           lv {level}
         </span>
-        <span className="flex items-center gap-1.5 rounded-full bg-night-raised px-3 py-1 font-mono text-xs text-lamp">
+        <span className="flex items-center gap-1.5 rounded-full bg-white/60 px-3 py-1 font-mono text-xs text-sun">
           <CoinIcon className="h-3.5 w-3.5" />
           {user.coins}
         </span>
-        <span className="font-mono text-xs text-ink-dim">
+        <span className="font-mono text-xs text-muted">
           {user.xp} xp total
         </span>
       </div>
@@ -126,9 +126,9 @@ function AdventureView() {
       <section className="mt-10 overflow-x-auto pb-4">
         <div className="relative min-w-[720px] px-6 pt-14">
           {/* road */}
-          <div className="absolute left-6 right-6 top-[88px] h-1 rounded-full bg-night-line" />
+          <div className="absolute left-6 right-6 top-[88px] h-1 rounded-full bg-line" />
           <div
-            className="absolute left-6 top-[88px] h-1 rounded-full bg-lamp transition-all duration-700"
+            className="absolute left-6 top-[88px] h-1 rounded-full bg-sun transition-all duration-700"
             style={{ width: `calc((100% - 3rem) * ${positionPct / 100})` }}
           />
 
@@ -150,20 +150,20 @@ function AdventureView() {
                   <div
                     className={`mx-auto mt-9 h-3.5 w-3.5 rounded-full border-2 ${
                       reached
-                        ? "border-lamp bg-lamp"
+                        ? "border-sun bg-sun"
                         : isNext
-                          ? "border-lamp bg-night"
-                          : "border-night-line bg-night"
+                          ? "border-sun bg-white/70"
+                          : "border-line bg-white/70"
                     }`}
                   />
                   <p
                     className={`mt-2 text-xs font-bold ${
-                      reached ? "text-paper" : "text-ink-dim"
+                      reached ? "text-ink" : "text-muted"
                     }`}
                   >
                     {stop.name}
                   </p>
-                  <p className="mt-0.5 font-mono text-[10px] text-ink-dim">
+                  <p className="mt-0.5 font-mono text-[10px] text-muted">
                     lv {stop.level}
                   </p>
                 </div>
@@ -174,22 +174,22 @@ function AdventureView() {
       </section>
 
       {/* status card */}
-      <section className="mt-6 max-w-xl rounded-2xl border border-night-line bg-night-raised p-6">
+      <section className="mt-6 max-w-xl glass rounded-3xl p-6">
         {next ? (
           <>
-            <p className="text-sm text-paper">
-              <span className="font-bold text-lamp">{xpToNext} xp</span> to{" "}
+            <p className="text-sm text-ink">
+              <span className="font-bold text-sun">{xpToNext} xp</span> to{" "}
               <span className="font-bold">{next.name}</span>. That is about{" "}
               {Math.ceil(xpToNext / 60)} focused{" "}
               {Math.ceil(xpToNext / 60) === 1 ? "hour" : "hours"}, or fewer if
               you clear word cards on the way.
             </p>
-            <p className="mt-2 text-xs text-ink-dim">
+            <p className="mt-2 text-xs text-muted">
               {STOPS[reachedIdx].blurb}
             </p>
             {hint && (
-              <p className="mt-3 text-xs text-ink-dim">
-                A card is waiting for you: <span className="text-lamp">{hint}</span>.
+              <p className="mt-3 text-xs text-muted">
+                A card is waiting for you: <span className="text-sun">{hint}</span>.
                 Start a session in any room to practice it.
               </p>
             )}

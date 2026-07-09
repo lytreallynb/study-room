@@ -15,9 +15,9 @@ const STATUS_LABEL: Record<PresenceStatus, string> = {
 };
 
 const STATUS_DOT: Record<PresenceStatus, string> = {
-  focusing: "bg-lamp",
+  focusing: "bg-sun",
   break: "bg-mint",
-  idle: "bg-ink-dim",
+  idle: "bg-muted",
 };
 
 interface Props {
@@ -56,9 +56,9 @@ export default function Character({
         <defs>
           {/* soft radial pool so the lamp reads as light, not a solid shape */}
           <radialGradient id={glowId}>
-            <stop offset="0%" stopColor="var(--lamp)" stopOpacity="0.4" />
-            <stop offset="60%" stopColor="var(--lamp)" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="var(--lamp)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--sun)" stopOpacity="0.4" />
+            <stop offset="60%" stopColor="var(--sun)" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="var(--sun)" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -141,7 +141,7 @@ export default function Character({
         {/* zzz while dozing */}
         {status === "idle" && (
           <g
-            fill="var(--ink-dim)"
+            fill="var(--muted)"
             fontFamily="var(--font-spline-mono), monospace"
             fontSize="10"
           >
@@ -155,9 +155,9 @@ export default function Character({
         )}
 
         {/* desk */}
-        <rect x="22" y="78" width="76" height="7" rx="2.5" fill="#4A4066" />
-        <rect x="28" y="85" width="5" height="18" fill="#3B3354" />
-        <rect x="87" y="85" width="5" height="18" fill="#3B3354" />
+        <rect x="22" y="78" width="76" height="7" rx="2.5" fill="#C9A87C" />
+        <rect x="28" y="85" width="5" height="18" fill="#A8865D" />
+        <rect x="87" y="85" width="5" height="18" fill="#A8865D" />
 
         {/* on the desk: book while focusing, mug while on break */}
         {status === "focusing" && (
@@ -177,7 +177,7 @@ export default function Character({
               strokeWidth="1.5"
             />
             {status === "break" && (
-              <g stroke="var(--ink-dim)" strokeWidth="1.2" strokeLinecap="round" fill="none">
+              <g stroke="var(--muted)" strokeWidth="1.2" strokeLinecap="round" fill="none">
                 <path d="M69 66 q1.5 -2 0 -4" className="anim-steam" />
                 <path d="M72.5 66 q-1.5 -2 0 -4" className="anim-steam-late" />
               </g>
@@ -188,31 +188,31 @@ export default function Character({
         {/* desk lamp, kept at the desk's left edge so the arm never crosses
             the character */}
         <g>
-          <rect x="24" y="72" width="10" height="3" rx="1.5" fill="#2B3049" />
-          <line x1="29" y1="72" x2="29" y2="59" stroke="#2B3049" strokeWidth="2.5" />
-          <path d="M29 59 L37 53" stroke="#2B3049" strokeWidth="2.5" strokeLinecap="round" />
+          <rect x="24" y="72" width="10" height="3" rx="1.5" fill="#3E6472" />
+          <line x1="29" y1="72" x2="29" y2="59" stroke="#3E6472" strokeWidth="2.5" />
+          <path d="M29 59 L37 53" stroke="#3E6472" strokeWidth="2.5" strokeLinecap="round" />
           {/* shade: small wedge hanging off the arm */}
           <path
             d="M34 50 L42 54 L37 60 L31 55 Z"
-            fill={lampOn ? "var(--lamp)" : "#2B3049"}
+            fill={lampOn ? "var(--sun)" : "#3E6472"}
           />
           {/* light cone falling onto the desk */}
           {lampOn && (
             <path
               d="M38 58 L50 77 L28 77 Z"
-              fill="var(--lamp)"
+              fill="var(--sun)"
               opacity="0.12"
               className="anim-lampglow"
             />
           )}
-          {lampDim && <circle cx="37" cy="56" r="2" fill="var(--lamp)" opacity="0.5" />}
+          {lampDim && <circle cx="37" cy="56" r="2" fill="var(--sun)" opacity="0.5" />}
         </g>
       </svg>
 
       <figcaption className="flex max-w-full items-center gap-1.5 text-xs">
         <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[status]}`} />
         <span
-          className={`truncate ${isSelf ? "font-bold text-paper" : "text-ink-dim"}`}
+          className={`truncate ${isSelf ? "font-bold text-ink" : "text-muted"}`}
         >
           {displayName}
           {isSelf ? " (you)" : ""}

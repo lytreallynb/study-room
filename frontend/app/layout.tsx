@@ -25,7 +25,7 @@ const splineMono = Spline_Sans_Mono({
 export const metadata: Metadata = {
   title: "StudySync",
   description:
-    "A late-night study hall where you focus together: join a room, turn on your lamp, and see who else is studying right now.",
+    "A seaside study room where you focus together: take a desk by the water, switch your lamp on, and see who else is studying right now.",
 };
 
 export default function RootLayout({
@@ -39,6 +39,9 @@ export default function RootLayout({
       className={`${fraunces.variable} ${karla.variable} ${splineMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* ambient surf on the horizon, behind everything */}
+        <div className="wave-layer wave-back" aria-hidden="true" />
+        <div className="wave-layer wave-front" aria-hidden="true" />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

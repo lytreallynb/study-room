@@ -69,12 +69,12 @@ export default function WordPractice({ onReward }: Props) {
   }
 
   return (
-    <section className="rounded-2xl border border-night-line bg-night-raised p-6">
+    <section className="glass rounded-3xl p-6">
       <div className="flex items-baseline justify-between">
-        <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-ink-dim">
+        <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
           word cards
         </h2>
-        <span className="font-mono text-xs text-ink-dim">
+        <span className="font-mono text-xs text-muted">
           {done.correct}/{done.total} this sit
         </span>
       </div>
@@ -82,7 +82,7 @@ export default function WordPractice({ onReward }: Props) {
       {error ? (
         <p className="mt-4 text-sm text-coral">{error}</p>
       ) : loading ? (
-        <p className="mt-4 text-sm text-ink-dim">Shuffling the deck...</p>
+        <p className="mt-4 text-sm text-muted">Shuffling the deck...</p>
       ) : !card ? (
         <div className="mt-4">
           <p className="text-sm text-mint">
@@ -93,7 +93,7 @@ export default function WordPractice({ onReward }: Props) {
               setLoading(true);
               refill();
             }}
-            className="mt-3 rounded-full border border-night-line px-4 py-1.5 text-sm font-bold text-paper hover:border-ink-dim"
+            className="mt-3 rounded-full border border-line px-4 py-1.5 text-sm font-bold text-ink hover:border-muted"
           >
             Check for more
           </button>
@@ -101,10 +101,10 @@ export default function WordPractice({ onReward }: Props) {
       ) : (
         <div className="mt-4" key={card.id}>
           <div className="flex items-baseline gap-2">
-            <p className="font-display text-3xl text-paper">{card.term}</p>
-            <span className="text-xs text-ink-dim">{card.pos}</span>
+            <p className="font-display text-3xl text-ink">{card.term}</p>
+            <span className="text-xs text-muted">{card.pos}</span>
             {card.box !== null && (
-              <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-ink-dim">
+              <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted">
                 box {card.box}
               </span>
             )}
@@ -112,21 +112,21 @@ export default function WordPractice({ onReward }: Props) {
 
           {revealed ? (
             <div className="anim-cardflip mt-3">
-              <p className="text-sm text-paper">{card.definition}</p>
-              <p className="mt-1 text-sm text-lamp">{card.translation}</p>
-              <p className="mt-2 text-xs italic leading-relaxed text-ink-dim">
+              <p className="text-sm text-ink">{card.definition}</p>
+              <p className="mt-1 text-sm text-sun">{card.translation}</p>
+              <p className="mt-2 text-xs italic leading-relaxed text-muted">
                 {card.example}
               </p>
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => grade(true)}
-                  className="rounded-full bg-mint px-4 py-1.5 text-sm font-bold text-night hover:brightness-110"
+                  className="rounded-full bg-mint px-4 py-1.5 text-sm font-bold text-white hover:brightness-110"
                 >
                   I knew it
                 </button>
                 <button
                   onClick={() => grade(false)}
-                  className="rounded-full border border-night-line px-4 py-1.5 text-sm font-bold text-paper hover:border-ink-dim"
+                  className="rounded-full border border-line px-4 py-1.5 text-sm font-bold text-ink hover:border-muted"
                 >
                   Show me again
                 </button>
@@ -135,7 +135,7 @@ export default function WordPractice({ onReward }: Props) {
           ) : (
             <button
               onClick={() => setRevealed(true)}
-              className="mt-3 w-full rounded-xl border border-dashed border-night-line py-6 text-sm text-ink-dim hover:border-lamp/60 hover:text-paper"
+              className="mt-3 w-full rounded-xl border border-dashed border-line py-6 text-sm text-muted hover:border-sun/60 hover:text-ink"
             >
               Tap to reveal the meaning
             </button>
@@ -146,7 +146,7 @@ export default function WordPractice({ onReward }: Props) {
       {toast && (
         <p
           key={toast.id}
-          className="anim-floatup mt-3 flex items-center gap-1.5 text-sm font-bold text-lamp"
+          className="anim-floatup mt-3 flex items-center gap-1.5 text-sm font-bold text-sun"
           onAnimationEnd={() => setToast(null)}
         >
           <CoinIcon className="h-3.5 w-3.5" />

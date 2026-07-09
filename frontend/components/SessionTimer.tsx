@@ -127,8 +127,8 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
     "rounded-full px-5 py-2 text-sm font-bold disabled:opacity-50 transition-colors";
 
   return (
-    <section className="rounded-2xl border border-night-line bg-night-raised p-6">
-      <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-ink-dim">
+    <section className="glass rounded-3xl p-6">
+      <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
         {running
           ? paused
             ? "paused, stretch your legs"
@@ -138,7 +138,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
 
       <p
         className={`mt-3 font-mono text-5xl tabular-nums ${
-          running && !paused ? "text-lamp" : "text-paper"
+          running && !paused ? "text-sun" : "text-ink"
         }`}
         aria-live="off"
       >
@@ -151,16 +151,16 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
       )}
       {reward && (reward.coins_earned > 0 || reward.xp_earned > 0) && (
         <div className="mt-3 flex flex-col gap-2">
-          <p className="anim-coinpop flex items-center gap-2 text-sm font-bold text-lamp">
+          <p className="anim-coinpop flex items-center gap-2 text-sm font-bold text-sun">
             <CoinIcon />
             +<CountUp value={reward.coins_earned} /> coins
-            <span className="text-ink-dim">·</span>
-            <span className="text-paper">
+            <span className="text-muted">·</span>
+            <span className="text-ink">
               +<CountUp value={reward.xp_earned} /> xp
             </span>
           </p>
           {reward.leveled_up && (
-            <p className="anim-levelup rounded-lg bg-lamp-soft px-3 py-2 text-sm font-bold text-lamp">
+            <p className="anim-levelup rounded-lg bg-sun-soft px-3 py-2 text-sm font-bold text-sun">
               Level up! You reached level {reward.level}. The road on your
               adventure map just got longer.
             </p>
@@ -170,13 +170,13 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
 
       <div className="mt-5 flex flex-wrap gap-2">
         {openElsewhere ? (
-          <p className="text-sm text-ink-dim">
+          <p className="text-sm text-muted">
             You have a session running at another desk. End it there before
             starting one here.
           </p>
         ) : !running ? (
           <button
-            className={`${btn} bg-lamp text-night hover:brightness-110`}
+            className={`${btn} bg-sun text-white hover:brightness-110`}
             disabled={busy || !restored}
             onClick={() =>
               act(() => api.startSession(roomId), "focusing")
@@ -188,7 +188,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
           <>
             {paused ? (
               <button
-                className={`${btn} bg-lamp text-night hover:brightness-110`}
+                className={`${btn} bg-sun text-white hover:brightness-110`}
                 disabled={busy}
                 onClick={() =>
                   act(() => api.resumeSession(session.id), "focusing")
@@ -198,7 +198,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
               </button>
             ) : (
               <button
-                className={`${btn} bg-mint text-night hover:brightness-110`}
+                className={`${btn} bg-mint text-white hover:brightness-110`}
                 disabled={busy}
                 onClick={() =>
                   act(() => api.pauseSession(session.id), "break")
@@ -208,7 +208,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
               </button>
             )}
             <button
-              className={`${btn} border border-night-line text-paper hover:border-ink-dim`}
+              className={`${btn} border border-line text-ink hover:border-muted`}
               disabled={busy}
               onClick={() => act(() => api.endSession(session.id), "idle")}
             >
@@ -220,7 +220,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
 
       {error && <p className="mt-3 text-sm text-coral">{error}</p>}
 
-      <p className="mt-4 text-xs leading-relaxed text-ink-dim">
+      <p className="mt-4 text-xs leading-relaxed text-muted">
         Focus time is measured by the server, not your browser. Pausing dims
         your lamp for everyone in the room.
       </p>

@@ -47,7 +47,7 @@ function RoomView({ roomId }: { roomId: string }) {
     return (
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
         <p className="text-coral">{loadError}</p>
-        <Link href="/rooms" className="mt-4 inline-block text-lamp hover:underline">
+        <Link href="/rooms" className="mt-4 inline-block text-sun hover:underline">
           Back to the hallway
         </Link>
       </main>
@@ -59,13 +59,13 @@ function RoomView({ roomId }: { roomId: string }) {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <Link href="/rooms" className="text-sm text-ink-dim hover:text-paper">
+        <Link href="/rooms" className="text-sm text-muted hover:text-ink">
           &larr; hallway
         </Link>
-        <h1 className="font-display text-2xl font-semibold text-paper">
+        <h1 className="font-display text-2xl font-semibold text-ink">
           {room?.name ?? "..."}
         </h1>
-        <span className="font-mono text-xs text-ink-dim">
+        <span className="font-mono text-xs text-muted">
           {connState === "live" ? (
             <>
               <span className="text-mint">●</span> {members.length} at their
@@ -84,18 +84,18 @@ function RoomView({ roomId }: { roomId: string }) {
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
         {/* the study hall floor */}
         <section
-          className="min-h-[320px] rounded-2xl border border-night-line bg-night-raised/50 p-6"
+          className="min-h-[320px] glass rounded-3xl p-6"
           aria-label="People in this room"
         >
           {members.length === 0 ? (
             <div className="flex h-full min-h-[280px] flex-col items-center justify-center text-center">
-              <p className="text-ink-dim">
+              <p className="text-muted">
                 {connState === "live"
                   ? "The room is empty and dark."
                   : "Finding your desk..."}
               </p>
               {connState === "live" && (
-                <p className="mt-1 text-sm text-ink-dim/70">
+                <p className="mt-1 text-sm text-muted/70">
                   Start a session below and your lamp will be the first one on.
                 </p>
               )}
@@ -122,7 +122,7 @@ function RoomView({ roomId }: { roomId: string }) {
             <WordPractice onReward={() => void refreshUser()} />
           )}
           {room && (
-            <p className="px-2 text-xs text-ink-dim">
+            <p className="px-2 text-xs text-muted">
               Room seats {room.capacity}. Lamps switch off automatically if
               someone loses connection for 45 seconds.
             </p>
