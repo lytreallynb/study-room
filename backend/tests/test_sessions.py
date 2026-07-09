@@ -142,3 +142,74 @@ async def test_two_focused_hours_levels_up(
     ).json()["reward"]
     assert reward["leveled_up"] is True
     assert reward["level"] == 2
+
+
+async def test_coin_rate_experiment_prices_the_reward(
+    client: AsyncClient, auth_headers: dict[str, str], db: AsyncSession
+) -> None:
+    """With the coin-rate experiment active, ending a session assigns the
+    user a variant (exposure), pays coins at the variant's rate, and logs a
+    session_completed outcome that shows up in the results endpoint."""
+    from app.services.rewards import COIN_RATE_VARIANTS, VARIANT_COIN_MULTIPLIER
+
+    resp = await client.post(
+        "/experiments",
+        json={
+            "key": "coin-rate",
+            "name": "Focus coin rate",
+            "variants": COIN_RATE_VARIANTS,
+        },
+        headers=auth_headers,
+    )
+    assert resp.status_code == 201
+
+    sid = (
+        await client.post("/sessions", json={}, headers=auth_headers)
+    ).json()["id"]
+    session = await db.get(StudySession, UUID(sid))
+    assert session is not None
+    session.last_resumed_at = datetime.now(timezone.utc) - timedelta(minutes=10)
+    await db.commit()
+
+    end = await client.post(f"/sessions/{sid}/end", headers=auth_headers)
+    assert end.status_code == 200
+    reward = end.json()["reward"]
+
+    # The variant reported on the reward matches the deterministic assignment.
+    assignment = (
+        await client.get("/experiments/coin-rate/assignment", headers=auth_headers)
+    ).json()
+    assert reward["variant"] == assignment["variant"]
+
+    # Coins follow the variant's rate; XP is variant-independent.
+    expected_coins = 10 * VARIANT_COIN_MULTIPLIER[assignment["variant"]]
+    assert reward["coins_earned"] == expected_coins
+    assert reward["xp_earned"] == 10
+
+    # Exposure + outcome both landed in the experiment results.
+    results = (
+        await client.get("/experiments/coin-rate/results", headers=auth_headers)
+    ).json()
+    row = next(r for r in results if r["variant"] == assignment["variant"])
+    assert row["exposures"] == 1
+    assert row["completions"] == 1
+    other = next(r for r in results if r["variant"] != assignment["variant"])
+    assert other["exposures"] == 0
+
+
+async def test_reward_defaults_to_control_rate_without_experiment(
+    client: AsyncClient, auth_headers: dict[str, str], db: AsyncSession
+) -> None:
+    sid = (
+        await client.post("/sessions", json={}, headers=auth_headers)
+    ).json()["id"]
+    session = await db.get(StudySession, UUID(sid))
+    assert session is not None
+    session.last_resumed_at = datetime.now(timezone.utc) - timedelta(minutes=10)
+    await db.commit()
+
+    reward = (
+        await client.post(f"/sessions/{sid}/end", headers=auth_headers)
+    ).json()["reward"]
+    assert reward["coins_earned"] == 10
+    assert reward["variant"] is None

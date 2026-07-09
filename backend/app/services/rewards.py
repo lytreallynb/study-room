@@ -8,6 +8,11 @@ Economy:
   - 1 XP and 1 coin per focused minute (session end)
   - 2 XP per correct word review, plus 1 coin per 5 correct reviews
   - Level n requires LEVEL_STEP_XP * (n - 1) cumulative XP (linear ramp)
+
+The coin rate is experimentable: when the ``coin-rate`` experiment exists and
+is active, the session-end coin multiplier comes from the user's variant
+(assigned deterministically by the experiments service). Without the
+experiment everything falls back to the control rate.
 """
 
 from dataclasses import dataclass
@@ -21,6 +26,11 @@ COINS_PER_FOCUS_MINUTE = 1
 XP_PER_CORRECT_REVIEW = 2
 REVIEWS_PER_COIN = 5
 
+# A/B: does a richer coin rate change how often people finish sessions?
+COIN_RATE_EXPERIMENT_KEY = "coin-rate"
+COIN_RATE_VARIANTS = ["control", "double-coins"]
+VARIANT_COIN_MULTIPLIER = {"control": 1, "double-coins": 2}
+
 
 @dataclass
 class Reward:
@@ -28,6 +38,9 @@ class Reward:
     xp_earned: int
     level: int
     leveled_up: bool
+    # Which coin-rate variant priced this reward; None when the experiment
+    # is not running.
+    variant: str | None = None
 
 
 def level_for_xp(xp: int) -> int:
@@ -51,13 +64,18 @@ def _apply(user: User, coins: int, xp: int) -> Reward:
     )
 
 
-def grant_focus_reward(user: User, focus_seconds: int) -> Reward:
+def grant_focus_reward(
+    user: User, focus_seconds: int, variant: str | None = None
+) -> Reward:
     minutes = max(0, focus_seconds) // 60
-    return _apply(
+    multiplier = VARIANT_COIN_MULTIPLIER.get(variant or "control", 1)
+    reward = _apply(
         user,
-        coins=minutes * COINS_PER_FOCUS_MINUTE,
+        coins=minutes * COINS_PER_FOCUS_MINUTE * multiplier,
         xp=minutes * XP_PER_FOCUS_MINUTE,
     )
+    reward.variant = variant
+    return reward
 
 
 def grant_review_reward(user: User, correct: bool, correct_count_after: int) -> Reward:

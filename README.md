@@ -17,7 +17,7 @@ deep in focus, who's on a break — with a coins/levels reward system on top.
 - **REST APIs** for rooms / sessions / analytics, with **server-side anti-cheat**
   on study time and **automated integration + WebSocket tests**.
 - **Async Celery workers** roll up daily study stats; **Redis-cached leaderboard**.
-- **A/B testing module** with deterministic user bucketing + exposure/metric event logging.
+- **A/B testing module** with deterministic user bucketing + exposure/metric event logging, wired to a real product lever: the session-reward **coin rate is experiment-priced** (`coin-rate`).
 - **Server-authoritative game economy**: XP/coins/levels granted only from
   server-verified focus time and word reviews (client can render coins, never mint them).
 - **Spaced-repetition vocabulary** (Leitner boxes) practiced inside focus sessions.
@@ -147,5 +147,6 @@ Then set `CORS_ORIGINS` on the Render API service to the Vercel URL.
 - [x] **Phase 4** — A/B testing: SHA-256 **deterministic bucketing**, persisted assignments, exposure + outcome metric event log, per-variant results (completion rate), feature flags with **percentage rollouts**, 7 tests.
 - [x] **Phase 6** — Observability (Prometheus `/metrics`: HTTP + custom business counters), production config ($PORT, CORS allowlist, DB-URL normalization, realtime `/health`), one-file **Render Blueprint** (`render.yaml`) provisioning API + realtime + worker + Postgres + Redis.
 - [x] **Phase 5** — Frontend MVP: Next.js 16 (App Router, strict TS, Tailwind v4). Live room with **animated SVG characters at desks** (lamp on = focusing, coffee = break, zzz = idle), Socket.IO presence with heartbeat + reconnect re-join, session timer driven by server-side `last_resumed_at`, stats + leaderboard pages. Verified end-to-end with a **two-browser Playwright script** (cross-client presence + live status flips).
+- [x] **Phase 9** — Rewards wired to experimentation: the session-end coin rate is governed by the `coin-rate` experiment (control = 1 coin/min, double-coins = 2). Ending a session auto-assigns the variant (exposure), prices the reward server-side, and logs a `session_completed` outcome, so `/experiments/coin-rate/results` reports completion rate per incentive level. Falls back to control when the experiment is absent.
 - [x] **Phase 8** — Seaside redesign: calm coastal theme (sky-to-sea-to-sand gradient scene, drifting wave layers, warm sun accent) with rounded frosted-glass panels throughout.
 - [x] **Phase 7** — Gamification loop: ending a session grants **coins + XP from server-verified focus time** (1/minute); **word flashcards** (50-word seeded deck, Leitner spaced repetition, `/words/practice` + review endpoints) practiced during sessions grant XP and a coin per 5 correct; levels derive from XP; **adventure map** where your character walks a 7-stop coast road (Window Desk to Horizon Point) as XP accrues. Reward animations: coin count-up, level-up banner, floating XP toasts, card flip.

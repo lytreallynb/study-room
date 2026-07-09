@@ -38,6 +38,9 @@ class RewardRead(BaseModel):
     xp_earned: int
     level: int
     leveled_up: bool
+    # Coin-rate experiment variant that priced this reward (None when the
+    # experiment is not running).
+    variant: str | None = None
 
 
 class SessionEndRead(SessionRead):

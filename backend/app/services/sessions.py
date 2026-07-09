@@ -17,8 +17,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.metrics import sessions_started_total
+from app.models.experiment import MetricEvent, MetricEventType
 from app.models.room import Room
-from app.services import rewards
+from app.services import experiments, rewards
 from app.models.session import (
     SessionEvent,
     SessionEventType,
@@ -136,6 +137,16 @@ async def end_session(
     if session.status == SessionStatus.ended:
         raise HTTPException(status.HTTP_409_CONFLICT, "Session already ended")
 
+    # Coin rate is A/B-tested: resolve the variant first (get_or_assign logs
+    # the exposure in its own transaction on first participation).
+    variant: str | None = None
+    experiment = await experiments.get_experiment(
+        db, rewards.COIN_RATE_EXPERIMENT_KEY
+    )
+    if experiment is not None and experiment.active:
+        assignment, _ = await experiments.get_or_assign(db, user, experiment)
+        variant = assignment.variant
+
     now = _now()
     if session.status == SessionStatus.active:
         _accumulate(session, now)
@@ -144,7 +155,19 @@ async def end_session(
     session.last_resumed_at = None
     db.add(SessionEvent(session_id=session.id, type=SessionEventType.end, ts=now))
     # Rewards come from the server-verified focus time, same transaction.
-    reward = rewards.grant_focus_reward(user, session.focus_seconds)
+    reward = rewards.grant_focus_reward(user, session.focus_seconds, variant)
+    if variant is not None:
+        # Outcome event for the experiment, in the same transaction as the
+        # session close so results never see a half-recorded end.
+        db.add(
+            MetricEvent(
+                user_id=user.id,
+                experiment_key=rewards.COIN_RATE_EXPERIMENT_KEY,
+                variant=variant,
+                event_type=MetricEventType.session_completed.value,
+                value=float(session.focus_seconds),
+            )
+        )
     await db.commit()
     await db.refresh(session)
     return session, reward
