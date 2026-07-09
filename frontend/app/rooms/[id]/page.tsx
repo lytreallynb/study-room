@@ -7,7 +7,7 @@ import Link from "next/link";
 import { use, useCallback, useEffect, useState } from "react";
 
 import Character from "../../../components/Character";
-import { EmptyBeach } from "../../../components/art";
+import { EmptyDesk, WindowPane } from "../../../components/art";
 import Nav from "../../../components/Nav";
 import RequireAuth from "../../../components/RequireAuth";
 import SessionTimer from "../../../components/SessionTimer";
@@ -82,15 +82,17 @@ function RoomView({ roomId }: { roomId: string }) {
 
       {roomError && <p className="mt-3 text-sm text-coral">{roomError}</p>}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
-        {/* the study hall floor */}
+      <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_320px]">
+        {/* the room: dawn window up top, desks on the floor below */}
         <section
-          className="min-h-[320px] glass rounded-3xl p-6"
+          className="glass flex flex-col overflow-hidden rounded-2xl"
           aria-label="People in this room"
         >
+          <WindowPane className="h-24 sm:h-28" />
+          <div className="well min-h-[280px] flex-1 px-5 py-6">
           {members.length === 0 ? (
-            <div className="flex h-full min-h-[280px] flex-col items-center justify-center text-center">
-              <EmptyBeach />
+            <div className="flex h-full min-h-[240px] flex-col items-center justify-center text-center">
+              <EmptyDesk />
               <p className="mt-4 text-muted">
                 {connState === "live"
                   ? "The room is empty and dark."
@@ -115,6 +117,7 @@ function RoomView({ roomId }: { roomId: string }) {
               ))}
             </div>
           )}
+          </div>
         </section>
 
         {/* your timer + word practice while the session runs */}

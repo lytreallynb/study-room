@@ -124,10 +124,10 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
   const paused = session?.status === "paused";
 
   const btn =
-    "rounded-full px-5 py-2 text-sm font-bold disabled:opacity-50 transition-colors";
+    "rounded-lg px-5 py-2 text-sm font-semibold disabled:opacity-50 transition-colors";
 
   return (
-    <section className="glass rounded-3xl p-6">
+    <section className="glass rounded-2xl p-6">
       <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
         {running
           ? paused
@@ -176,7 +176,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
           </p>
         ) : !running ? (
           <button
-            className={`${btn} bg-sun text-white hover:brightness-110`}
+            className={`${btn} bg-mint text-white hover:brightness-110`}
             disabled={busy || !restored}
             onClick={() =>
               act(() => api.startSession(roomId), "focusing")
@@ -188,7 +188,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
           <>
             {paused ? (
               <button
-                className={`${btn} bg-sun text-white hover:brightness-110`}
+                className={`${btn} bg-mint text-white hover:brightness-110`}
                 disabled={busy}
                 onClick={() =>
                   act(() => api.resumeSession(session.id), "focusing")
@@ -198,7 +198,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
               </button>
             ) : (
               <button
-                className={`${btn} bg-mint text-white hover:brightness-110`}
+                className={`${btn} border border-line bg-surface text-ink hover:border-muted`}
                 disabled={busy}
                 onClick={() =>
                   act(() => api.pauseSession(session.id), "break")
@@ -208,7 +208,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
               </button>
             )}
             <button
-              className={`${btn} border border-line text-ink hover:border-muted`}
+              className={`${btn} border border-line bg-surface text-coral hover:border-coral/50`}
               disabled={busy}
               onClick={() => act(() => api.endSession(session.id), "idle")}
             >

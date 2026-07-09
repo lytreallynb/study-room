@@ -1,15 +1,15 @@
 "use client";
 
-// The adventure map: your character walks the coast road from the window
-// desk to the horizon, powered entirely by XP (focused minutes + reviews).
-// Progress is server-derived; this page just draws where you are.
+// The coast road as a floor plan: a vertical path through the building,
+// one landing per stop. Reached floors are lit; the current one carries
+// your marker and the distance to the next. Powered entirely by XP.
 
 import { useEffect, useState } from "react";
 
 import Nav from "../../components/Nav";
 import RequireAuth from "../../components/RequireAuth";
 import CoinIcon from "../../components/CoinIcon";
-import { StopIcon } from "../../components/art";
+import { PathNode } from "../../components/art";
 import { characterLook } from "../../lib/character";
 import * as api from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -33,52 +33,16 @@ const STOPS: Stop[] = [
   { level: 20, name: "Horizon Point", blurb: "Legend of the seaside study room." },
 ];
 
-function Traveler({ userId }: { userId: string }) {
+function YouMarker({ userId, name }: { userId: string; name: string }) {
   const look = characterLook(userId);
-  const pointyEars = ["cat", "fox", "owl"].includes(look.species);
-  const roundEars = look.species === "bear";
-  const tallEars = look.species === "rabbit";
   return (
-    <svg viewBox="0 0 40 48" className="anim-walkbob h-12 w-10">
-      <path d="M8 44 Q8 28 20 28 Q32 28 32 44 Z" fill={look.body} />
-      {look.species === "penguin" && (
-        <path d="M13 44 Q13 32 20 32 Q27 32 27 44 Z" fill={look.belly} />
-      )}
-      <circle cx="20" cy="20" r="11" fill={look.body} />
-      {pointyEars && (
-        <>
-          <path d="M11 14 l-3 -8 l8 3.5 Z" fill={look.body} />
-          <path d="M29 14 l3 -8 l-8 3.5 Z" fill={look.body} />
-        </>
-      )}
-      {roundEars && (
-        <>
-          <circle cx="12" cy="11" r="4" fill={look.body} />
-          <circle cx="28" cy="11" r="4" fill={look.body} />
-        </>
-      )}
-      {tallEars && (
-        <>
-          <ellipse cx="14" cy="4" rx="3.2" ry="8" fill={look.body} />
-          <ellipse cx="26" cy="4" rx="3.2" ry="8" fill={look.body} />
-        </>
-      )}
-      {look.species === "frog" && (
-        <>
-          <circle cx="14" cy="10" r="4" fill={look.body} />
-          <circle cx="26" cy="10" r="4" fill={look.body} />
-        </>
-      )}
-      {(look.species === "penguin" || look.species === "owl") && (
-        <path d="M18 22 l2 2.5 l2 -2.5 z" fill="#F0A24A" />
-      )}
-      <g fill="#3A3050">
-        <circle cx="16" cy="19" r="1.7" />
-        <circle cx="24" cy="19" r="1.7" />
-      </g>
-      {/* tiny backpack: an adventurer today, a student tonight */}
-      <rect x="4" y="30" width="7" height="9" rx="2" fill={look.bodyDark} />
-    </svg>
+    <span className="anim-walkbob inline-flex items-center gap-2 rounded-lg bg-ink/85 px-2.5 py-1 text-xs font-medium text-paper">
+      <span
+        className="h-2.5 w-2.5 rounded-full ring-2 ring-paper/60"
+        style={{ backgroundColor: look.body }}
+      />
+      {name}, you are here
+    </span>
   );
 }
 
@@ -108,126 +72,115 @@ function AdventureView() {
     0,
   );
   const next = STOPS[reachedIdx + 1] ?? null;
-
-  // Fraction of the way from the reached stop to the next one, in XP.
-  const reachedXp = (STOPS[reachedIdx].level - 1) * LEVEL_STEP_XP;
-  const nextXp = next ? (next.level - 1) * LEVEL_STEP_XP : reachedXp;
-  const frac = next
-    ? Math.min(1, (user.xp - reachedXp) / (nextXp - reachedXp))
-    : 1;
-  const xpToNext = next ? nextXp - user.xp : 0;
-
-  // Character position across the whole trail (percent of width).
-  const segment = 100 / (STOPS.length - 1);
-  const positionPct = (reachedIdx + frac * (next ? 1 : 0)) * segment;
+  const nextXp = next ? (next.level - 1) * LEVEL_STEP_XP : user.xp;
+  const xpToNext = next ? Math.max(0, nextXp - user.xp) : 0;
+  const focusedHours = Math.max(1, Math.ceil(xpToNext / 60));
 
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
-      <h1 className="font-display text-3xl font-semibold text-ink">
-        The coast road
-      </h1>
+    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h1 className="font-display text-3xl font-medium text-ink">
+          The coast road
+        </h1>
+        <div className="flex items-center gap-2 text-sm">
+          <span className="rounded-md border border-line bg-surface px-2.5 py-1 font-mono text-xs text-mint">
+            lv {level}
+          </span>
+          <span className="flex items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1 font-mono text-xs text-sun">
+            <CoinIcon className="h-3.5 w-3.5" />
+            {user.coins}
+          </span>
+          <span className="font-mono text-xs text-muted">
+            {user.xp} xp total
+          </span>
+        </div>
+      </div>
       <p className="mt-1 max-w-xl text-sm text-muted">
-        Every focused minute and every word you remember moves your character
-        down the road. No shortcuts; the server keeps the ledger.
+        Focused minutes and remembered words move you down the road. The
+        server keeps the ledger.
       </p>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
-        <span className="rounded-full bg-white/60 px-3 py-1 font-mono text-xs text-mint">
-          lv {level}
-        </span>
-        <span className="flex items-center gap-1.5 rounded-full bg-white/60 px-3 py-1 font-mono text-xs text-sun">
-          <CoinIcon className="h-3.5 w-3.5" />
-          {user.coins}
-        </span>
-        <span className="font-mono text-xs text-muted">
-          {user.xp} xp total
-        </span>
-      </div>
-
-      {/* the trail */}
-      <section className="mt-10 overflow-x-auto pb-4">
-        <div className="relative min-w-[720px] px-6 pt-14">
-          {/* road */}
-          <div className="absolute left-6 right-6 top-[88px] h-1 rounded-full bg-line" />
-          <div
-            className="absolute left-6 top-[88px] h-1 rounded-full bg-sun transition-all duration-700"
-            style={{ width: `calc((100% - 3rem) * ${positionPct / 100})` }}
+      {/* the path: floors of one building, ground floor first */}
+      <section className="mt-8">
+        <ol className="relative flex flex-col gap-0">
+          {/* the wall the path climbs */}
+          <span
+            className="absolute bottom-6 left-[7px] top-6 w-px bg-line"
+            aria-hidden="true"
           />
-
-          {/* traveler */}
-          <div
-            className="absolute top-6 -translate-x-1/2 transition-all duration-700"
-            style={{ left: `calc(1.5rem + (100% - 3rem) * ${positionPct / 100})` }}
-          >
-            <Traveler userId={user.id} />
-          </div>
-
-          {/* stops */}
-          <div className="flex justify-between">
-            {STOPS.map((stop, i) => {
-              const reached = i <= reachedIdx;
-              const isNext = i === reachedIdx + 1;
-              return (
-                <div key={stop.name} className="w-24 text-center">
-                  <div
-                    className={`mx-auto mt-9 h-3.5 w-3.5 rounded-full border-2 ${
-                      reached
-                        ? "border-sun bg-sun"
-                        : isNext
-                          ? "border-sun bg-white/70"
-                          : "border-line bg-white/70"
-                    }`}
-                  />
-                  <StopIcon
-                    index={i}
-                    reached={reached}
-                    className="mx-auto mt-2 h-7 w-7"
-                  />
+          {STOPS.map((stop, i) => {
+            const reached = i <= reachedIdx;
+            const isCurrent = i === reachedIdx;
+            const isNext = i === reachedIdx + 1;
+            return (
+              <li key={stop.name} className="relative flex gap-5 pb-2 pl-0">
+                <span className="z-10 mt-5 shrink-0">
+                  <PathNode reached={reached} current={isCurrent} />
+                </span>
+                <div
+                  className={`mb-2 flex-1 rounded-xl px-4 py-3.5 ${
+                    isCurrent
+                      ? "glass lamp-pool"
+                      : reached
+                        ? "bg-surface/50"
+                        : ""
+                  }`}
+                >
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <span
+                      className={`font-display text-lg ${
+                        reached ? "text-ink" : "text-muted"
+                      }`}
+                    >
+                      {stop.name}
+                    </span>
+                    <span className="font-mono text-[11px] text-muted">
+                      lv {stop.level}
+                    </span>
+                  </div>
                   <p
-                    className={`mt-1 text-xs font-bold ${
-                      reached ? "text-ink" : "text-muted"
+                    className={`mt-0.5 text-sm ${
+                      reached ? "text-muted" : "text-muted/60"
                     }`}
                   >
-                    {stop.name}
+                    {stop.blurb}
                   </p>
-                  <p className="mt-0.5 font-mono text-[10px] text-muted">
-                    lv {stop.level}
-                  </p>
+                  {isCurrent && (
+                    <div className="mt-3">
+                      <YouMarker userId={user.id} name={user.display_name} />
+                    </div>
+                  )}
+                  {isNext && next && (
+                    <p className="mt-2 text-sm text-ink">
+                      <span className="font-semibold text-sun">
+                        {xpToNext} xp
+                      </span>{" "}
+                      to go, about {focusedHours} focused{" "}
+                      {focusedHours === 1 ? "hour" : "hours"}, fewer with word
+                      cards.
+                    </p>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </li>
+            );
+          })}
+        </ol>
       </section>
 
-      {/* status card */}
-      <section className="mt-6 max-w-xl glass rounded-3xl p-6">
-        {next ? (
-          <>
-            <p className="text-sm text-ink">
-              <span className="font-bold text-sun">{xpToNext} xp</span> to{" "}
-              <span className="font-bold">{next.name}</span>. That is about{" "}
-              {Math.ceil(xpToNext / 60)} focused{" "}
-              {Math.ceil(xpToNext / 60) === 1 ? "hour" : "hours"}, or fewer if
-              you clear word cards on the way.
-            </p>
-            <p className="mt-2 text-xs text-muted">
-              {STOPS[reachedIdx].blurb}
-            </p>
-            {hint && (
-              <p className="mt-3 text-xs text-muted">
-                A card is waiting for you: <span className="text-sun">{hint}</span>.
-                Start a session in any room to practice it.
-              </p>
-            )}
-          </>
-        ) : (
-          <p className="text-sm text-mint">
-            You reached the summit. We are as surprised as you are. New roads
-            soon.
-          </p>
-        )}
-      </section>
+      {!next && (
+        <p className="mt-4 text-sm text-mint">
+          You reached the horizon. We are as surprised as you are. New roads
+          soon.
+        </p>
+      )}
+
+      {hint && (
+        <p className="mt-6 text-sm text-muted">
+          A card is waiting for you:{" "}
+          <span className="font-medium text-sun">{hint}</span>. Start a
+          session in any room to practice it.
+        </p>
+      )}
     </main>
   );
 }

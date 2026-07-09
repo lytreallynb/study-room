@@ -40,7 +40,7 @@ export default function AuthForm({ mode }: Props) {
   }
 
   const inputCls =
-    "w-full rounded-lg border border-line bg-white/70 px-3.5 py-2.5 text-ink placeholder:text-muted/60";
+    "w-full rounded-lg border border-line bg-surface px-3.5 py-2.5 text-ink placeholder:text-muted/60";
 
   return (
     <div className="w-full max-w-sm">
@@ -96,7 +96,7 @@ export default function AuthForm({ mode }: Props) {
         <button
           type="submit"
           disabled={busy}
-          className="mt-2 rounded-full bg-sun py-2.5 font-bold text-white hover:brightness-110 disabled:opacity-50"
+          className="mt-2 rounded-lg bg-mint py-2.5 font-semibold text-white hover:brightness-110 disabled:opacity-50"
         >
           {busy
             ? "One moment"
@@ -110,14 +110,14 @@ export default function AuthForm({ mode }: Props) {
         {mode === "register" ? (
           <>
             Already have a desk?{" "}
-            <Link href="/login" className="text-sun hover:underline">
+            <Link href="/login" className="font-medium text-mint hover:underline">
               Log in
             </Link>
           </>
         ) : (
           <>
             First time here?{" "}
-            <Link href="/register" className="text-sun hover:underline">
+            <Link href="/register" className="font-medium text-mint hover:underline">
               Take a seat
             </Link>
           </>

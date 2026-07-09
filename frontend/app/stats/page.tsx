@@ -70,7 +70,7 @@ function StatsView() {
             ].map((s) => (
               <div
                 key={s.label}
-                className="glass rounded-3xl p-5"
+                className="glass rounded-2xl p-5"
               >
                 <p className="font-mono text-3xl text-sun">{s.value}</p>
                 <p className="mt-1 text-xs uppercase tracking-widest text-muted">
@@ -81,7 +81,7 @@ function StatsView() {
           </section>
 
           {/* daily log */}
-          <section className="glass rounded-3xl p-6">
+          <section className="glass rounded-2xl p-6">
             <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
               last 30 nights
             </h2>
@@ -102,7 +102,7 @@ function StatsView() {
                     <span className="font-mono text-xs text-muted">
                       {d.date}
                     </span>
-                    <span className="h-2 overflow-hidden rounded-full bg-white/70">
+                    <span className="h-2 overflow-hidden rounded-full bg-surface">
                       <span
                         className="block h-full rounded-full bg-sun"
                         style={{
@@ -124,7 +124,7 @@ function StatsView() {
         </div>
 
         {/* leaderboard */}
-        <section className="h-fit glass rounded-3xl p-6">
+        <section className="h-fit glass rounded-2xl p-6">
           <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
             hall of focus
           </h2>

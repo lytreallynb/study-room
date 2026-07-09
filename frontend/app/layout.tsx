@@ -1,22 +1,23 @@
 import type { Metadata } from "next";
-import { Baloo_2, Nunito, Sono } from "next/font/google";
+import { Newsreader, Schibsted_Grotesk, Sono } from "next/font/google";
 
 import { AuthProvider } from "../lib/auth";
 import "./globals.css";
 
-// Rounded, sun-warmed type for a seaside room: Baloo 2 carries headings
-// (chunky, friendly), Nunito carries body text (soft humanist), and Sono, a
-// soft monospace, carries the timer and stat numerals.
-const baloo = Baloo_2({
-  variable: "--font-baloo",
+// Library-at-dawn type: Newsreader (a quiet literary serif) carries
+// headings, Schibsted Grotesk carries the interface, and Sono, a soft
+// monospace, carries the timer and stat numerals.
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
 });
 
-const nunito = Nunito({
-  variable: "--font-nunito",
+const schibsted = Schibsted_Grotesk({
+  variable: "--font-schibsted",
   subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const sono = Sono({
@@ -28,7 +29,7 @@ const sono = Sono({
 export const metadata: Metadata = {
   title: "StudySync",
   description:
-    "A seaside study room where you focus together: take a desk by the water, switch your lamp on, and see who else is studying right now.",
+    "A quiet study room by the water: take a desk, switch your lamp on, and work next to people who are really there.",
 };
 
 export default function RootLayout({
@@ -39,12 +40,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${baloo.variable} ${nunito.variable} ${sono.variable} h-full antialiased`}
+      className={`${newsreader.variable} ${schibsted.variable} ${sono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {/* ambient surf on the horizon, behind everything */}
-        <div className="wave-layer wave-back" aria-hidden="true" />
-        <div className="wave-layer wave-front" aria-hidden="true" />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

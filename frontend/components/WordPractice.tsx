@@ -69,7 +69,7 @@ export default function WordPractice({ onReward }: Props) {
   }
 
   return (
-    <section className="glass rounded-3xl p-6">
+    <section className="glass rounded-2xl p-6">
       <div className="flex items-baseline justify-between">
         <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
           word cards
@@ -93,7 +93,7 @@ export default function WordPractice({ onReward }: Props) {
               setLoading(true);
               refill();
             }}
-            className="mt-3 rounded-full border border-line px-4 py-1.5 text-sm font-bold text-ink hover:border-muted"
+            className="mt-3 rounded-lg border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-ink hover:border-muted"
           >
             Check for more
           </button>
@@ -120,13 +120,13 @@ export default function WordPractice({ onReward }: Props) {
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => grade(true)}
-                  className="rounded-full bg-mint px-4 py-1.5 text-sm font-bold text-white hover:brightness-110"
+                  className="rounded-lg bg-mint px-4 py-1.5 text-sm font-semibold text-white hover:brightness-110"
                 >
                   I knew it
                 </button>
                 <button
                   onClick={() => grade(false)}
-                  className="rounded-full border border-line px-4 py-1.5 text-sm font-bold text-ink hover:border-muted"
+                  className="rounded-lg border border-line bg-surface px-4 py-1.5 text-sm font-semibold text-ink hover:border-muted"
                 >
                   Show me again
                 </button>
@@ -135,7 +135,7 @@ export default function WordPractice({ onReward }: Props) {
           ) : (
             <button
               onClick={() => setRevealed(true)}
-              className="mt-3 w-full rounded-xl border border-dashed border-line py-6 text-sm text-muted hover:border-sun/60 hover:text-ink"
+              className="mt-3 w-full rounded-lg border border-dashed border-line py-6 text-sm text-muted hover:border-sun/60 hover:text-ink"
             >
               Tap to reveal the meaning
             </button>

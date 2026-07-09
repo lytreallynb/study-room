@@ -1,22 +1,23 @@
 @import "tailwindcss";
 
-/* StudySync "seaside study room" tokens.
-   A calm daytime coast: pale sky into sea into sand, warm sun accent,
-   deep sea-slate ink, frosted-glass panels with generous corners. */
+/* StudySync "dawn study lounge" tokens.
+   The page is a room interior at first light: a cool dawn window high on
+   the wall, warm cream plaster below, pine-green actions, brass lamp light,
+   a restrained clay red for warnings. Slate ink carries the text. */
 :root {
-  --base: #f6fbfd;
-  --surface: #ffffff;
-  --line: #b9d9e2;
-  --ink: #1f4254;
-  --muted: #58808f;
-  --sun: #ef8a47;
-  --sun-soft: #ef8a4726;
-  --mint: #2f9e85;
-  --coral: #d95f49;
+  --paper: #f4f0e6;
+  --surface: #fbf9f3;
+  --line: #d9d2c0;
+  --ink: #2b3a3e;
+  --muted: #67777b;
+  --sun: #b8823b; /* brass: lamp light, coins, focus */
+  --sun-soft: #b8823b1f;
+  --mint: #3e6b5c; /* pine: primary actions, success */
+  --coral: #b4543e; /* clay: errors, warnings */
 }
 
 @theme inline {
-  --color-base: var(--base);
+  --color-paper: var(--paper);
   --color-surface: var(--surface);
   --color-line: var(--line);
   --color-ink: var(--ink);
@@ -25,171 +26,176 @@
   --color-sun-soft: var(--sun-soft);
   --color-mint: var(--mint);
   --color-coral: var(--coral);
-  --font-display: var(--font-baloo);
-  --font-sans: var(--font-nunito);
+  --font-display: var(--font-newsreader);
+  --font-sans: var(--font-schibsted);
   --font-mono: var(--font-sono);
 }
 
 html {
-  background: var(--base);
+  background: var(--paper);
 }
 
 body {
   color: var(--ink);
-  font-family: var(--font-nunito), system-ui, sans-serif;
-  /* the view from the desk: morning sun, sky, sea, a strip of sand */
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  /* the room: dawn sky through a high window, warm light pooling on the
+     wall below it, cream plaster everywhere else */
   background:
     radial-gradient(
-      circle at 80% 12%,
-      #ffe6bf 0%,
-      rgba(255, 230, 191, 0.55) 12%,
-      rgba(255, 230, 191, 0) 34%
+      ellipse 70% 34% at 50% 0%,
+      rgba(240, 218, 178, 0.55) 0%,
+      rgba(240, 218, 178, 0) 70%
     ),
     linear-gradient(
       180deg,
-      #eef8fb 0%,
-      #ddf1f7 34%,
-      #bde4ee 52%,
-      #93cfdf 62%,
-      #7cc3d6 72%,
-      #a9dbe3 78%,
-      #f4ecd9 96%,
-      #f1e6cd 100%
+      #c3d2d3 0%,
+      #ccd6cf 7%,
+      #ddddcc 14%,
+      #ece7d6 24%,
+      #f4f0e6 42%,
+      #f4f0e6 88%,
+      #ece5d4 100%
     );
   background-attachment: fixed;
 }
 
-/* frosted glass panel: the standard container of the app */
+/* soft paper grain so large fields never look flat-digital */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.42 0 0 0 0 0.36 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- surfaces ---- */
+
+/* the standard panel: warm linen with a hairline edge, no bubble */
 .glass {
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 8px 32px rgba(31, 66, 84, 0.1);
+  background: rgba(251, 249, 243, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  outline: 1px solid rgba(43, 58, 62, 0.07);
+  box-shadow:
+    0 1px 2px rgba(43, 58, 62, 0.05),
+    0 12px 32px -12px rgba(43, 58, 62, 0.14);
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 8px 32px rgba(31, 66, 84, 0.1);
+  background: rgba(251, 249, 243, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(43, 58, 62, 0.08);
 }
 
-/* --- ambient waves along the horizon --- */
-
-@keyframes wavedrift {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+/* recessed area inside a panel (room floor, input wells) */
+.well {
+  background:
+    linear-gradient(180deg, rgba(43, 58, 62, 0.045), rgba(43, 58, 62, 0) 24px),
+    rgba(240, 235, 222, 0.6);
+  border: 1px solid rgba(43, 58, 62, 0.06);
 }
 
-.wave-layer {
-  position: fixed;
-  left: 0;
-  width: 200%;
-  height: 42px;
-  pointer-events: none;
-  background-repeat: repeat-x;
-  background-size: 220px 42px;
+/* the dawn window: cool glass band with a light streak */
+.window-pane {
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 42%,
+      rgba(255, 255, 255, 0.28) 47%,
+      rgba(255, 255, 255, 0) 55%
+    ),
+    linear-gradient(180deg, #b7cbcd 0%, #ccd8cd 45%, #e8dfc8 85%, #f0e3c4 100%);
+  border: 1px solid rgba(43, 58, 62, 0.1);
+  box-shadow: inset 0 2px 12px rgba(43, 58, 62, 0.12);
 }
 
-.wave-back {
-  top: calc(62vh - 20px);
-  opacity: 0.35;
-  animation: wavedrift 26s linear infinite;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 42'%3E%3Cpath d='M0 22 Q27 8 55 22 T110 22 T165 22 T220 22 V42 H0 Z' fill='%23ffffff'/%3E%3C/svg%3E");
+/* warm pool a lit desk lamp throws on a surface */
+.lamp-pool {
+  background: radial-gradient(
+    ellipse 60% 100% at 50% 0%,
+    rgba(184, 130, 59, 0.22),
+    rgba(184, 130, 59, 0) 75%
+  );
 }
 
-.wave-front {
-  top: calc(62vh + 2px);
-  opacity: 0.25;
-  animation: wavedrift 17s linear infinite reverse;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 42'%3E%3Cpath d='M0 24 Q27 12 55 24 T110 24 T165 24 T220 24 V42 H0 Z' fill='%23ffffff'/%3E%3C/svg%3E");
-}
+/* ---- character / presence animations (kept quiet) ---- */
 
-/* --- character animations --- */
-
-/* focusing: slow breathing */
 @keyframes breathe {
   0%,
   100% {
-    transform: translateY(0) scaleY(1);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(1px) scaleY(0.97);
+    transform: translateY(1.2px);
   }
 }
 
-/* break: gentle sway while sipping */
 @keyframes sway {
   0%,
   100% {
-    transform: rotate(-2deg);
+    transform: rotate(-1.2deg);
   }
   50% {
-    transform: rotate(2deg);
+    transform: rotate(1.2deg);
   }
 }
 
-/* idle: head-bob doze */
 @keyframes doze {
   0%,
   100% {
     transform: rotate(0deg) translateY(0);
   }
   50% {
-    transform: rotate(6deg) translateY(2px);
+    transform: rotate(3deg) translateY(1.5px);
   }
 }
 
 @keyframes zzz {
   0% {
     opacity: 0;
-    transform: translate(0, 0) scale(0.6);
+    transform: translate(0, 0);
   }
   30% {
-    opacity: 1;
+    opacity: 0.8;
   }
   100% {
     opacity: 0;
-    transform: translate(6px, -14px) scale(1.1);
+    transform: translate(5px, -10px);
   }
 }
 
 @keyframes steam {
   0% {
     opacity: 0;
-    transform: translateY(0) scaleX(1);
+    transform: translateY(0);
   }
   35% {
-    opacity: 0.7;
+    opacity: 0.6;
   }
   100% {
     opacity: 0;
-    transform: translateY(-9px) scaleX(1.4);
+    transform: translateY(-8px);
   }
 }
 
 @keyframes blink {
   0%,
-  92%,
+  93%,
   100% {
     transform: scaleY(1);
   }
-  95% {
-    transform: scaleY(0.1);
+  96% {
+    transform: scaleY(0.15);
   }
 }
 
-/* lamp glow pulsing very slowly while focusing */
 @keyframes lampglow {
   0%,
   100% {
-    opacity: 0.85;
+    opacity: 0.8;
   }
   50% {
     opacity: 1;
@@ -197,54 +203,53 @@ body {
 }
 
 .anim-breathe {
-  animation: breathe 3.2s ease-in-out infinite;
+  animation: breathe 3.6s ease-in-out infinite;
   transform-origin: 50% 100%;
   transform-box: fill-box;
 }
 .anim-sway {
-  animation: sway 2.6s ease-in-out infinite;
+  animation: sway 3s ease-in-out infinite;
   transform-origin: 50% 100%;
   transform-box: fill-box;
 }
 .anim-doze {
-  animation: doze 4s ease-in-out infinite;
+  animation: doze 4.5s ease-in-out infinite;
   transform-origin: 50% 100%;
   transform-box: fill-box;
 }
 .anim-zzz {
-  animation: zzz 2.4s ease-out infinite;
+  animation: zzz 2.8s ease-out infinite;
 }
 .anim-zzz-late {
-  animation: zzz 2.4s ease-out infinite;
-  animation-delay: 1.2s;
+  animation: zzz 2.8s ease-out infinite;
+  animation-delay: 1.4s;
 }
 .anim-steam {
-  animation: steam 2s ease-out infinite;
+  animation: steam 2.2s ease-out infinite;
 }
 .anim-steam-late {
-  animation: steam 2s ease-out infinite;
-  animation-delay: 1s;
+  animation: steam 2.2s ease-out infinite;
+  animation-delay: 1.1s;
 }
 .anim-blink {
-  animation: blink 4.5s ease-in-out infinite;
+  animation: blink 5s ease-in-out infinite;
   transform-origin: center;
   transform-box: fill-box;
 }
 .anim-lampglow {
-  animation: lampglow 3.5s ease-in-out infinite;
+  animation: lampglow 3.8s ease-in-out infinite;
 }
 
-/* --- reward + flashcard animations --- */
+/* ---- reward + flashcard animations ---- */
 
-/* coin pops up from the reward line */
 @keyframes coinpop {
   0% {
     opacity: 0;
-    transform: translateY(6px) scale(0.5);
+    transform: translateY(5px) scale(0.7);
   }
-  40% {
+  45% {
     opacity: 1;
-    transform: translateY(-4px) scale(1.15);
+    transform: translateY(-2px) scale(1.06);
   }
   100% {
     opacity: 1;
@@ -252,27 +257,21 @@ body {
   }
 }
 
-/* level-up banner slides in and glows */
 @keyframes levelup {
   0% {
     opacity: 0;
-    transform: translateY(10px) scale(0.9);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(-2px) scale(1.04);
+    transform: translateY(8px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-/* flashcard reveal */
 @keyframes cardflip {
   0% {
     opacity: 0;
-    transform: rotateX(70deg);
+    transform: rotateX(55deg);
   }
   100% {
     opacity: 1;
@@ -280,47 +279,45 @@ body {
   }
 }
 
-/* small floating "+2 xp" style toast */
 @keyframes floatup {
   0% {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(3px);
   }
   25% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translateY(-16px);
+    transform: translateY(-12px);
   }
 }
 
-/* adventure character walking in place */
 @keyframes walkbob {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
   }
 }
 
 .anim-coinpop {
-  animation: coinpop 0.5s ease-out both;
+  animation: coinpop 0.45s ease-out both;
 }
 .anim-levelup {
-  animation: levelup 0.6s ease-out both;
+  animation: levelup 0.5s ease-out both;
 }
 .anim-cardflip {
-  animation: cardflip 0.35s ease-out both;
-  transform-origin: 50% 80%;
+  animation: cardflip 0.3s ease-out both;
+  transform-origin: 50% 85%;
 }
 .anim-floatup {
-  animation: floatup 1.4s ease-out both;
+  animation: floatup 1.3s ease-out both;
 }
 .anim-walkbob {
-  animation: walkbob 0.9s ease-in-out infinite;
+  animation: walkbob 1.1s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -337,14 +334,11 @@ body {
   .anim-levelup,
   .anim-cardflip,
   .anim-floatup,
-  .anim-walkbob,
-  .wave-back,
-  .wave-front {
+  .anim-walkbob {
     animation: none;
   }
 }
 
-/* visible keyboard focus on the light ground */
 :focus-visible {
   outline: 2px solid var(--sun);
   outline-offset: 2px;

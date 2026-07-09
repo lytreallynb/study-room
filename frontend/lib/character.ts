@@ -23,20 +23,21 @@ export interface CharacterLook {
   seed: number;
 }
 
+// Muted, interior tones: presence avatars, not stickers.
 const SPECIES_PALETTES: Array<{
   species: Species;
   body: string;
   bodyDark: string;
   belly: string;
 }> = [
-  { species: "cat", body: "#E8C97C", bodyDark: "#C4A254", belly: "#F7ECD2" },
-  { species: "fox", body: "#F0A868", bodyDark: "#D07E3E", belly: "#FBEEDF" },
-  { species: "bear", body: "#C89F7B", bodyDark: "#A57C58", belly: "#EBD9C4" },
-  { species: "penguin", body: "#5F7A8A", bodyDark: "#46606E", belly: "#F2F6F7" },
-  { species: "rabbit", body: "#E3D3C2", bodyDark: "#C4AE97", belly: "#F8F1E8" },
-  { species: "frog", body: "#9AD1A0", bodyDark: "#6FAF78", belly: "#DFF2E0" },
-  { species: "seal", body: "#B8C4CE", bodyDark: "#93A3B0", belly: "#EDF1F4" },
-  { species: "owl", body: "#C9A87C", bodyDark: "#A6855C", belly: "#EFE3CD" },
+  { species: "cat", body: "#C8AE7E", bodyDark: "#A78F60", belly: "#EDE3CE" },
+  { species: "fox", body: "#C98F63", bodyDark: "#A96F42", belly: "#EFE1D2" },
+  { species: "bear", body: "#AE9179", bodyDark: "#8F745C", belly: "#E4D6C6" },
+  { species: "penguin", body: "#657882", bodyDark: "#4D5F68", belly: "#F0EEE6" },
+  { species: "rabbit", body: "#C9BCA9", bodyDark: "#A79A85", belly: "#EFE8DC" },
+  { species: "frog", body: "#8FAE8C", bodyDark: "#6F8F6C", belly: "#DCE7D8" },
+  { species: "seal", body: "#9FACB4", bodyDark: "#7F8E97", belly: "#E7EBED" },
+  { species: "owl", body: "#B09876", bodyDark: "#8F7856", belly: "#E7DCC6" },
 ];
 
 function fnv1a(str: string): number {
