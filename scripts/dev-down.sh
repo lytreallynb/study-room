@@ -4,7 +4,7 @@
 # (e.g. another Next.js app on :3000) are never touched.
 repo=$(cd "$(dirname "$0")/.." && pwd)
 
-for port in 8000 8001 3000 3001; do
+for port in 8010 8001 3000 3001; do
   pid=$(lsof -ti tcp:"$port" -s tcp:LISTEN || true)
   [ -z "$pid" ] && continue
   cwd=$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')

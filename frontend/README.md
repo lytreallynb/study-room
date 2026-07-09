@@ -34,7 +34,7 @@ character at a desk, live over Socket.IO.
 
 ```bash
 npm install
-npm run dev    # expects API on :8000 and realtime on :8001
+npm run dev    # expects API on :8010 and realtime on :8001
 ```
 
 Configuration (see `.env.example`): `NEXT_PUBLIC_API_URL`,

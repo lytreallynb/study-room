@@ -66,12 +66,12 @@ to instance B via Redis pub/sub.
 ```bash
 cd backend
 uv sync
-uv run uvicorn app.main:app --reload
-curl http://localhost:8000/health      # {"status":"ok",...}
+uv run uvicorn app.main:app --reload --port 8010
+curl http://localhost:8010/health      # {"status":"ok",...}
 uv run pytest
 ```
 
-**Frontend** (Next.js; expects the API on :8000 and realtime on :8001):
+**Frontend** (Next.js; expects the API on :8010 and realtime on :8001):
 
 ```bash
 cd frontend
@@ -104,7 +104,7 @@ uv run --with playwright python scripts/e2e_smoke.py   # E2E_BASE_URL to overrid
 
 ```bash
 docker compose up --build
-curl http://localhost:8000/health
+curl http://localhost:8010/health
 ```
 
 ## Observability

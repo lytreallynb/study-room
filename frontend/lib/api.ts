@@ -12,7 +12,7 @@ import type {
 } from "./types";
 
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8010";
 
 export const REALTIME_URL =
   process.env.NEXT_PUBLIC_REALTIME_URL ?? "http://localhost:8001";
