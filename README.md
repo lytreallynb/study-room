@@ -71,6 +71,14 @@ curl http://localhost:8000/health      # {"status":"ok",...}
 uv run pytest
 ```
 
+**Frontend** (Next.js; expects the API on :8000 and realtime on :8001):
+
+```bash
+cd frontend
+npm install
+npm run dev          # http://localhost:3000
+```
+
 **Realtime service** (presence; scale it horizontally by running several):
 
 ```bash
@@ -108,7 +116,17 @@ push to GitHub → Render Dashboard → New → Blueprint → select repo
 
 Migrations run on API start (`alembic upgrade head && uvicorn ...`). `JWT_SECRET` is generated for the API and shared to the realtime service; set `CORS_ORIGINS` to your frontend origin. The same `DATABASE_URL` is normalized per service (asyncpg for the async API/realtime, psycopg for the sync worker).
 
-**Free tier:** API + realtime + Postgres + Redis run on Render's free plan. The Celery **worker is paid-only** on Render (no free worker plan), so it's documented (commented) in the blueprint — enable it on a paid plan, or run it locally against the production `DATABASE_URL`/`REDIS_URL`. The live API + real-time presence demo works fully without it. Frontend deploys to Vercel (Phase 5).
+**Free tier:** API + realtime + Postgres + Redis run on Render's free plan. The Celery **worker is paid-only** on Render (no free worker plan), so it's documented (commented) in the blueprint — enable it on a paid plan, or run it locally against the production `DATABASE_URL`/`REDIS_URL`. The live API + real-time presence demo works fully without it.
+
+**Frontend (Vercel, free tier):** import the repo, set the root directory to
+`frontend/`, and add two env vars pointing at the Render services:
+
+```
+NEXT_PUBLIC_API_URL=https://<api-service>.onrender.com
+NEXT_PUBLIC_REALTIME_URL=https://<realtime-service>.onrender.com
+```
+
+Then set `CORS_ORIGINS` on the Render API service to the Vercel URL.
 
 ## Roadmap
 
@@ -118,4 +136,4 @@ Migrations run on API start (`alembic upgrade head && uvicorn ...`). `JWT_SECRET
 - [x] **Phase 3** — Celery worker + beat (sync psycopg engine): nightly per-user study aggregation (idempotent upserts, completion rate), **Redis-cached leaderboard** (sorted set), `/stats/me` + `/stats/leaderboard` endpoints, 6 tests.
 - [x] **Phase 4** — A/B testing: SHA-256 **deterministic bucketing**, persisted assignments, exposure + outcome metric event log, per-variant results (completion rate), feature flags with **percentage rollouts**, 7 tests.
 - [x] **Phase 6** — Observability (Prometheus `/metrics`: HTTP + custom business counters), production config ($PORT, CORS allowlist, DB-URL normalization, realtime `/health`), one-file **Render Blueprint** (`render.yaml`) provisioning API + realtime + worker + Postgres + Redis.
-- [ ] **Phase 5** — Frontend MVP with animated characters.
+- [x] **Phase 5** — Frontend MVP: Next.js 16 (App Router, strict TS, Tailwind v4). Live room with **animated SVG characters at desks** (lamp on = focusing, coffee = break, zzz = idle), Socket.IO presence with heartbeat + reconnect re-join, session timer driven by server-side `last_resumed_at`, stats + leaderboard pages. Verified end-to-end with a **two-browser Playwright script** (cross-client presence + live status flips).

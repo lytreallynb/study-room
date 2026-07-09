@@ -25,4 +25,7 @@ class SessionRead(BaseModel):
     status: SessionStatus
     started_at: datetime
     ended_at: datetime | None
+    # When the current active stretch began (None while paused/ended). Lets a
+    # reloading client resume its timer display without guessing.
+    last_resumed_at: datetime | None
     focus_seconds: int

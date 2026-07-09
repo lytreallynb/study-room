@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+/* StudySync "night study hall" tokens.
+   Deep indigo night, warm paper text, amber lamp glow for focus,
+   mint for breaks. */
+:root {
+  --night: #171b2e;
+  --night-raised: #212741;
+  --night-line: #303752;
+  --paper: #f2ede3;
+  --ink-dim: #8b91ad;
+  --lamp: #ffb454;
+  --lamp-soft: #ffb45426;
+  --mint: #7fd1ae;
+  --coral: #e89c9c;
+}
+
+@theme inline {
+  --color-night: var(--night);
+  --color-night-raised: var(--night-raised);
+  --color-night-line: var(--night-line);
+  --color-paper: var(--paper);
+  --color-ink-dim: var(--ink-dim);
+  --color-lamp: var(--lamp);
+  --color-lamp-soft: var(--lamp-soft);
+  --color-mint: var(--mint);
+  --color-coral: var(--coral);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-karla);
+  --font-mono: var(--font-spline-mono);
+}
+
+html {
+  background: var(--night);
+}
+
+body {
+  background: var(--night);
+  color: var(--paper);
+  font-family: var(--font-karla), system-ui, sans-serif;
+}
+
+/* --- character animations --- */
+
+/* focusing: slow breathing */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(1px) scaleY(0.97);
+  }
+}
+
+/* break: gentle sway while sipping */
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+/* idle: head-bob doze */
+@keyframes doze {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(6deg) translateY(2px);
+  }
+}
+
+@keyframes zzz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(6px, -14px) scale(1.1);
+  }
+}
+
+@keyframes steam {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scaleX(1);
+  }
+  35% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-9px) scaleX(1.4);
+  }
+}
+
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* lamp glow pulsing very slowly while focusing */
+@keyframes lampglow {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.anim-breathe {
+  animation: breathe 3.2s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+.anim-sway {
+  animation: sway 2.6s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+.anim-doze {
+  animation: doze 4s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+.anim-zzz {
+  animation: zzz 2.4s ease-out infinite;
+}
+.anim-zzz-late {
+  animation: zzz 2.4s ease-out infinite;
+  animation-delay: 1.2s;
+}
+.anim-steam {
+  animation: steam 2s ease-out infinite;
+}
+.anim-steam-late {
+  animation: steam 2s ease-out infinite;
+  animation-delay: 1s;
+}
+.anim-blink {
+  animation: blink 4.5s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.anim-lampglow {
+  animation: lampglow 3.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-breathe,
+  .anim-sway,
+  .anim-doze,
+  .anim-zzz,
+  .anim-zzz-late,
+  .anim-steam,
+  .anim-steam-late,
+  .anim-blink,
+  .anim-lampglow {
+    animation: none;
+  }
+}
+
+/* visible keyboard focus on the dark ground */
+:focus-visible {
+  outline: 2px solid var(--lamp);
+  outline-offset: 2px;
+}
