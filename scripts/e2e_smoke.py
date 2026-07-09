@@ -105,9 +105,7 @@ def main() -> int:
         # A takes a break; B must see the status flip live
         a.get_by_role("button", name="Take a break").click()
         expect(a.get_by_text("paused, stretch your legs")).to_be_visible(timeout=10000)
-        expect(
-            b.locator("figure", has_text="momo").get_by_label("momo, on a break")
-        ).to_be_visible(timeout=10000)
+        expect(b.get_by_label("momo, on a break")).to_be_visible(timeout=10000)
         print("ok: B sees A's break status live")
 
         # timer keeps counting for B's own session too: B starts one

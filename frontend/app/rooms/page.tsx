@@ -13,19 +13,43 @@ import * as api from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import type { Room } from "../../lib/types";
 
-function OccupancyLamps({ count }: { count: number }) {
-  if (count <= 0) {
-    return <span className="font-mono text-xs text-muted">quiet</span>;
-  }
+/* Desk lamps seen through the door glass: one per person inside. */
+function DoorGlass({ count }: { count: number }) {
+  const lamps = Math.min(count, 6);
+  const positions = [
+    { left: "22%", top: "58%" },
+    { left: "58%", top: "64%" },
+    { left: "40%", top: "44%" },
+    { left: "74%", top: "48%" },
+    { left: "28%", top: "34%" },
+    { left: "64%", top: "30%" },
+  ];
   return (
-    <span className="flex items-center gap-2">
-      <span className="flex gap-1">
-        {Array.from({ length: Math.min(count, 5) }, (_, i) => (
-          <span key={i} className="h-1.5 w-1.5 rounded-full bg-sun" />
-        ))}
-      </span>
-      <span className="font-mono text-xs text-sun">{count} inside</span>
-    </span>
+    <div className="door-glass relative h-24 overflow-hidden rounded-t-lg border border-ink/10">
+      {/* the room is lit in proportion to how many are inside */}
+      <div
+        className="absolute inset-0 transition-opacity duration-500"
+        style={{
+          opacity: count > 0 ? 0.25 + Math.min(count, 5) * 0.1 : 0,
+          background:
+            "radial-gradient(ellipse 80% 70% at 50% 80%, rgba(245,196,120,0.7), rgba(245,196,120,0) 75%)",
+        }}
+      />
+      {Array.from({ length: lamps }, (_, i) => (
+        <span
+          key={i}
+          className="status-lamp absolute h-1.5 w-1.5 rounded-full bg-sun shadow-[0_0_6px_2px_rgba(245,196,120,0.55)]"
+          style={{ ...positions[i], animationDelay: `${i * 0.9}s` }}
+        />
+      ))}
+      {/* muntin */}
+      <div className="absolute inset-y-0 left-1/2 w-px bg-ink/10" />
+      {count === 0 && (
+        <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 font-mono text-[10px] text-ink/40">
+          quiet
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -115,26 +139,35 @@ function RoomsList() {
           </p>
         </div>
       ) : (
-        <ul className="mt-8 flex flex-col gap-2.5">
+        <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
           {rooms.map((room) => (
             <li key={room.id}>
               <Link
                 href={`/rooms/${room.id}`}
-                className="glass group flex items-center gap-4 rounded-xl border border-transparent px-4 py-3.5 transition-colors hover:border-mint/40"
+                className="group block"
+                title={`${room.name}, ${room.occupancy ?? 0} inside`}
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink/85 font-mono text-xs tracking-wider text-paper">
-                  {room.name.slice(0, 2).toUpperCase()}
+                {/* the door: glass above, wood below, plate and handle */}
+                <div className="overflow-hidden rounded-lg shadow-[0_10px_24px_-12px_rgba(43,58,62,0.35)] transition-shadow group-hover:shadow-[0_12px_28px_-10px_rgba(184,130,59,0.35)]">
+                  <DoorGlass count={room.occupancy ?? 0} />
+                  <div className="door-wood relative h-20 border border-t-0 border-ink/10">
+                    {/* name plate */}
+                    <span className="absolute left-1/2 top-3 w-[80%] -translate-x-1/2 truncate rounded-sm border border-ink/15 bg-surface px-2 py-1 text-center font-display text-sm text-ink transition-colors group-hover:border-sun/60">
+                      {room.name}
+                    </span>
+                    {/* handle */}
+                    <span className="absolute right-2.5 top-12 h-3.5 w-1.5 rounded-full bg-ink/45" />
+                    <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] text-ink/50">
+                      seats {room.capacity}
+                      {room.owner_id === user?.id ? " · yours" : ""}
+                    </span>
+                  </div>
+                </div>
+                <span className="mt-1.5 block text-center font-mono text-[11px] text-muted">
+                  {(room.occupancy ?? 0) > 0
+                    ? `${room.occupancy} inside`
+                    : "\u00A0"}
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-display text-lg text-ink group-hover:text-mint">
-                    {room.name}
-                  </span>
-                  <span className="block text-xs text-muted">
-                    seats {room.capacity}
-                    {room.owner_id === user?.id ? " · your room" : ""}
-                  </span>
-                </span>
-                <OccupancyLamps count={room.occupancy ?? 0} />
               </Link>
             </li>
           ))}

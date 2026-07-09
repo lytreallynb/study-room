@@ -1,9 +1,8 @@
-// A seat in the room: an avatar at a desk, read as presence, not a sticker.
-// Focusing lights the lamp and opens the book; a break dims the lamp and
-// pours a coffee; idle fades the seat and closes the eyes. Species (from
-// lib/character.ts) shows only in the ear/beak silhouette and a muted coat.
-
-import { useId } from "react";
+// One seat in the room: a study carrel with a chair, privacy panel, desk,
+// reading lamp, and a name plate. The occupant is a minimal silhouette;
+// their state is told by the furniture: a lit breathing lamp and an open
+// book mean focus, steam over a mug means a break, a darkened pod means
+// idle. Everything is HTML/CSS except the small figure silhouette.
 
 import { characterLook, type CharacterLook } from "../lib/character";
 import type { PresenceStatus } from "../lib/types";
@@ -14,91 +13,76 @@ const STATUS_LABEL: Record<PresenceStatus, string> = {
   idle: "idle",
 };
 
-const STATUS_DOT: Record<PresenceStatus, string> = {
-  focusing: "bg-sun",
-  break: "bg-mint",
-  idle: "bg-muted/60",
-};
-
-const EYE = "#33424A";
-const DESK_TOP = "#D9C7A2";
-const DESK_EDGE = "#C2AC83";
-const LAMP_METAL = "#4A5A60";
-
-/* Ear/beak silhouettes only: enough to tell species apart at a glance. */
-function SpeciesSilhouette({
+/* Minimal head-and-shoulders silhouette; species reads from the ear line. */
+function Figure({
   look,
-  headY,
+  status,
 }: {
   look: CharacterLook;
-  headY: number;
+  status: PresenceStatus;
 }) {
-  const earY = headY - 12;
-  switch (look.species) {
-    case "cat":
-      return (
+  const idle = status === "idle";
+  const anim =
+    status === "focusing"
+      ? "anim-breathe"
+      : status === "break"
+        ? "anim-sway"
+        : "anim-doze";
+  const EYE = "#33424A";
+  return (
+    <svg viewBox="0 0 64 52" className={`h-14 w-16 ${anim}`} aria-hidden="true">
+      {/* shoulders */}
+      <path
+        d={idle ? "M14 52 Q14 40 32 40 Q50 40 50 52 Z" : "M14 52 Q14 36 32 36 Q50 36 50 52 Z"}
+        fill={look.body}
+      />
+      {look.species === "penguin" && (
+        <path
+          d={idle ? "M22 52 Q22 44 32 44 Q42 44 42 52 Z" : "M22 52 Q22 41 32 41 Q42 41 42 52 Z"}
+          fill={look.belly}
+        />
+      )}
+      {/* head */}
+      <circle cx="32" cy={idle ? 26 : 21} r="12" fill={look.body} />
+      {/* species ear line */}
+      {(look.species === "cat" || look.species === "fox" || look.species === "owl") && (
         <>
-          <path d={`M48 ${earY} l-2 -9 l9 4 Z`} fill={look.body} />
-          <path d={`M72 ${earY} l2 -9 l-9 4 Z`} fill={look.body} />
+          <path d={`M22 ${idle ? 18 : 13} l-2 -8 l8 4 Z`} fill={look.body} />
+          <path d={`M42 ${idle ? 18 : 13} l2 -8 l-8 4 Z`} fill={look.body} />
         </>
-      );
-    case "fox":
-      return (
+      )}
+      {look.species === "bear" && (
         <>
-          <path d={`M47 ${earY + 1} l-4 -11 l10 5 Z`} fill={look.body} />
-          <path d={`M73 ${earY + 1} l4 -11 l-10 5 Z`} fill={look.body} />
-          <ellipse cx="60" cy={headY + 8} rx="7.5" ry="5" fill={look.belly} />
+          <circle cx="23" cy={idle ? 16 : 11} r="4" fill={look.body} />
+          <circle cx="41" cy={idle ? 16 : 11} r="4" fill={look.body} />
         </>
-      );
-    case "bear":
-      return (
+      )}
+      {look.species === "rabbit" && (
         <>
-          <circle cx="49" cy={earY + 1} r="4.5" fill={look.body} />
-          <circle cx="71" cy={earY + 1} r="4.5" fill={look.body} />
-          <ellipse cx="60" cy={headY + 8} rx="6.5" ry="4.5" fill={look.belly} />
+          <ellipse cx="26" cy={idle ? 8 : 3} rx="3" ry="9" fill={look.body} />
+          <ellipse cx="38" cy={idle ? 8 : 3} rx="3" ry="9" fill={look.body} />
         </>
-      );
-    case "penguin":
-      return (
+      )}
+      {look.species === "frog" && (
         <>
-          <ellipse cx="60" cy={headY + 5} rx="9" ry="7.5" fill={look.belly} />
-          <path d={`M57.5 ${headY + 3} l2.5 3 l2.5 -3 z`} fill="#C98F63" />
+          <circle cx="25" cy={idle ? 15 : 10} r="4" fill={look.body} />
+          <circle cx="39" cy={idle ? 15 : 10} r="4" fill={look.body} />
         </>
-      );
-    case "rabbit":
-      return (
-        <>
-          <ellipse cx="53" cy={earY - 9} rx="3.6" ry="11" fill={look.body} />
-          <ellipse cx="67" cy={earY - 9} rx="3.6" ry="11" fill={look.body} />
-        </>
-      );
-    case "frog":
-      return (
-        <>
-          <circle cx="52" cy={earY + 3} r="4.5" fill={look.body} />
-          <circle cx="68" cy={earY + 3} r="4.5" fill={look.body} />
-        </>
-      );
-    case "seal":
-      return (
-        <>
-          <ellipse cx="60" cy={headY + 7} rx="7.5" ry="5" fill={look.belly} />
-          <g fill={look.bodyDark} opacity="0.7">
-            <circle cx="52" cy={headY + 7} r="0.8" />
-            <circle cx="68" cy={headY + 7} r="0.8" />
-          </g>
-        </>
-      );
-    case "owl":
-      return (
-        <>
-          <path d={`M49 ${earY + 2} l-1.5 -7 l6.5 3.5 Z`} fill={look.body} />
-          <path d={`M71 ${earY + 2} l1.5 -7 l-6.5 3.5 Z`} fill={look.body} />
-          <circle cx="55" cy={headY} r="5.5" fill={look.belly} />
-          <circle cx="65" cy={headY} r="5.5" fill={look.belly} />
-        </>
-      );
-  }
+      )}
+      {/* eyes: open dots, closed lines when idle */}
+      {idle ? (
+        <g stroke={EYE} strokeWidth="1.2" strokeLinecap="round">
+          <path d={`M26 27 h4`} />
+          <path d={`M34 27 h4`} />
+        </g>
+      ) : (
+        <g fill={EYE} className="anim-blink">
+          <circle cx="27.5" cy="22" r="1.7" />
+          <circle cx="36.5" cy="22" r="1.7" />
+        </g>
+      )}
+    </svg>
+  );
 }
 
 interface Props {
@@ -115,183 +99,98 @@ export default function Character({
   isSelf = false,
 }: Props) {
   const look = characterLook(userId);
-  const glowId = useId();
+  const focusing = status === "focusing";
+  const onBreak = status === "break";
   const idle = status === "idle";
-  const lampOn = status === "focusing";
-  const headY = idle ? 46 : 40;
-
-  const bodyAnim =
-    status === "focusing"
-      ? "anim-breathe"
-      : status === "break"
-        ? "anim-sway"
-        : "anim-doze";
 
   return (
-    <figure className="flex w-28 flex-col items-center gap-1.5">
-      <svg
-        viewBox="0 0 120 100"
-        className="h-24 w-28"
-        role="img"
-        aria-label={`${displayName}, ${STATUS_LABEL[status]}`}
-      >
-        <defs>
-          <radialGradient id={glowId}>
-            <stop offset="0%" stopColor="var(--sun)" stopOpacity="0.32" />
-            <stop offset="60%" stopColor="var(--sun)" stopOpacity="0.1" />
-            <stop offset="100%" stopColor="var(--sun)" stopOpacity="0" />
-          </radialGradient>
-        </defs>
+    <figure
+      className={`relative w-32 transition-opacity duration-700 ${
+        idle ? "opacity-60" : "opacity-100"
+      }`}
+      role="img"
+      aria-label={`${displayName}, ${STATUS_LABEL[status]}`}
+    >
+      <div className="relative h-36">
+        {/* privacy panel behind the desk */}
+        <div className="pod-panel absolute inset-x-4 bottom-11 top-6" />
 
-        {/* seat shadow grounds the figure in the room */}
-        <ellipse cx="60" cy="92" rx="42" ry="5" fill="var(--ink)" opacity="0.07" />
+        {/* lamp cone falls across the work area while focusing */}
+        {focusing && (
+          <div className="pod-lampcone anim-lampglow absolute bottom-12 left-5 h-16 w-20" />
+        )}
 
-        {/* lamplight on the desk */}
-        {lampOn && (
-          <ellipse
-            cx="58"
-            cy="72"
-            rx="34"
-            ry="16"
-            fill={`url(#${glowId})`}
-            className="anim-lampglow"
+        {/* chair back peeking behind the occupant */}
+        <div className="pod-chair absolute bottom-11 left-1/2 h-10 w-16 -translate-x-1/2" />
+
+        {/* the occupant */}
+        <div className="absolute bottom-9 left-1/2 -translate-x-1/2">
+          <Figure look={look} status={status} />
+        </div>
+
+        {/* reading lamp on the left desk edge */}
+        <div className="absolute bottom-12 left-5 h-12 w-8" aria-hidden="true">
+          <div className="absolute bottom-0 left-1 h-9 w-[2.5px] rounded-full bg-ink/60" />
+          <div className="absolute left-1 top-1 h-[2.5px] w-5 rounded-full bg-ink/60" style={{ transform: "rotate(18deg)", transformOrigin: "0 50%" }} />
+          <div
+            className={`absolute right-0 top-2 h-2.5 w-3.5 rounded-sm ${
+              focusing ? "bg-sun" : onBreak ? "bg-sun/50" : "bg-ink/50"
+            } ${focusing ? "anim-lampglow" : ""}`}
+            style={{ transform: "rotate(18deg)" }}
           />
-        )}
+        </div>
 
-        {/* the person at the desk */}
-        <g className={bodyAnim} opacity={idle ? 0.72 : 1}>
-          {/* shoulders */}
-          <path
-            d={
-              idle
-                ? "M42 74 Q42 58 60 58 Q78 58 78 74 Z"
-                : "M42 74 Q42 53 60 53 Q78 53 78 74 Z"
-            }
-            fill={look.body}
-          />
-          {look.species === "penguin" && (
-            <path
-              d={
-                idle
-                  ? "M50 74 Q50 63 60 63 Q70 63 70 74 Z"
-                  : "M50 74 Q50 58 60 58 Q70 58 70 74 Z"
-              }
-              fill={look.belly}
-            />
+        {/* desk: lit pool, top, front */}
+        <div className="absolute inset-x-1 bottom-6 h-6">
+          {focusing && (
+            <div className="pod-poollight anim-lampglow absolute -top-3 inset-x-2 h-4" />
           )}
-          {/* head */}
-          <circle cx="60" cy={headY} r="14" fill={look.body} />
-          <SpeciesSilhouette look={look} headY={headY} />
-          {/* eyes: calm, closed when idle; frogs look from their bumps */}
-          {look.species === "frog" ? (
-            idle ? (
-              <g stroke={EYE} strokeWidth="1.3" strokeLinecap="round" fill="none">
-                <path d={`M50 ${headY - 9} h4`} />
-                <path d={`M66 ${headY - 9} h4`} />
-              </g>
-            ) : (
-              <g fill={EYE}>
-                <circle cx="52" cy={headY - 9} r="1.7" />
-                <circle cx="68" cy={headY - 9} r="1.7" />
-              </g>
-            )
-          ) : idle ? (
-            <g stroke={EYE} strokeWidth="1.3" strokeLinecap="round" fill="none">
-              <path d={`M52.5 ${headY + 1} h4`} />
-              <path d={`M63.5 ${headY + 1} h4`} />
-            </g>
-          ) : (
-            <g fill={EYE} className="anim-blink">
-              <circle cx="54.5" cy={headY + 1} r="1.9" />
-              <circle cx="65.5" cy={headY + 1} r="1.9" />
-            </g>
-          )}
-        </g>
+          <div className="pod-desk-top absolute inset-x-0 top-0 h-2.5" />
+          <div className="pod-desk-front absolute inset-x-1 bottom-0 top-2.5" />
+        </div>
 
-        {/* one quiet z while idle */}
-        {idle && (
-          <text
-            x="80"
-            y="34"
-            fontFamily="var(--font-sono), monospace"
-            fontSize="9"
-            fill="var(--muted)"
-            className="anim-zzz"
-          >
-            z
-          </text>
-        )}
-
-        {/* desk: perspective top + front edge + legs */}
-        <path d="M24 74 L96 74 L92 82 L28 82 Z" fill={DESK_TOP} />
-        <rect x="28" y="82" width="64" height="4" rx="1" fill={DESK_EDGE} />
-        <path
-          d="M33 86 l-1.5 8 M87 86 l1.5 8"
-          stroke="#B29C74"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-
-        {/* desk objects: open book when focusing, mug on break/idle */}
-        {status === "focusing" && (
-          <g>
-            <path d="M50 74 l9 -2.5 l9 2.5 Z" fill="#F0EBDC" />
-            <path d="M50 74 l9 -2.5 v-1.2 l-9 2.5 Z" fill="#DAD2BC" />
-            <path d="M68 74 l-9 -2.5 v-1.2 l9 2.5 Z" fill="#DAD2BC" />
-          </g>
-        )}
-        {status !== "focusing" && (
-          <g>
-            <rect x="66" y="67" width="7.5" height="7" rx="1.2" fill="var(--coral)" opacity="0.85" />
-            <path
-              d="M73.5 68.5 q3 0 3 2 t-3 2"
-              fill="none"
-              stroke="var(--coral)"
-              strokeWidth="1.2"
-              opacity="0.85"
-            />
-            {status === "break" && (
-              <g
-                stroke="var(--muted)"
-                strokeWidth="1.1"
-                strokeLinecap="round"
-                fill="none"
-              >
-                <path d="M68.5 64 q1.2 -1.6 0 -3.2" className="anim-steam" />
-                <path d="M71.5 64 q-1.2 -1.6 0 -3.2" className="anim-steam-late" />
-              </g>
+        {/* desk objects */}
+        {focusing ? (
+          /* open book: two leaves */
+          <div className="absolute bottom-[46px] left-1/2 flex -translate-x-1/2" aria-hidden="true">
+            <div className="h-2 w-4 rounded-l-sm bg-[#F0EBDC] shadow-[inset_-1px_0_0_#DAD2BC]" style={{ transform: "skewY(-6deg)" }} />
+            <div className="h-2 w-4 rounded-r-sm bg-[#F0EBDC] shadow-[inset_1px_0_0_#DAD2BC]" style={{ transform: "skewY(6deg)" }} />
+          </div>
+        ) : (
+          /* mug, steaming on a break */
+          <div className="absolute bottom-[46px] right-7" aria-hidden="true">
+            {onBreak && (
+              <>
+                <span className="steam-wisp absolute -top-3 left-0.5" />
+                <span
+                  className="steam-wisp absolute -top-3 left-2"
+                  style={{ animationDelay: "1.2s" }}
+                />
+              </>
             )}
-          </g>
+            <div className="h-2.5 w-3 rounded-[2px] bg-coral/85" />
+          </div>
         )}
 
-        {/* lamp: a thin brass reading light at the desk edge */}
-        <g>
-          <path
-            d="M34 74 V56 L42 50"
-            stroke={LAMP_METAL}
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <path
-            d="M40 46.5 L47 51 L43 56 Z"
-            fill={lampOn ? "var(--sun)" : LAMP_METAL}
-          />
-          {lampOn && (
-            <path
-              d="M44 53 L54 73 L34 73 Z"
-              fill="var(--sun)"
-              opacity="0.1"
-              className="anim-lampglow"
-            />
-          )}
-        </g>
-      </svg>
+        {/* pod ground shadow */}
+        <div className="absolute inset-x-4 bottom-4 h-2 rounded-full bg-ink/10 blur-[3px]" />
+      </div>
 
-      <figcaption className="flex max-w-full items-center gap-1.5 text-xs">
-        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[status]}`} />
+      {/* name plate on the desk front */}
+      <figcaption className="absolute inset-x-2 bottom-0 flex items-center justify-center gap-1.5 rounded-sm border border-ink/10 bg-surface px-1.5 py-0.5">
         <span
-          className={`truncate ${isSelf ? "font-semibold text-ink" : "text-muted"}`}
+          className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+            focusing
+              ? "status-lamp bg-sun"
+              : onBreak
+                ? "bg-mint"
+                : "bg-muted/50"
+          }`}
+        />
+        <span
+          className={`truncate text-[11px] leading-4 ${
+            isSelf ? "font-semibold text-ink" : "text-muted"
+          }`}
         >
           {displayName}
           {isSelf ? " (you)" : ""}

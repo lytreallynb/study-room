@@ -7,7 +7,8 @@ import Link from "next/link";
 import { use, useCallback, useEffect, useState } from "react";
 
 import Character from "../../../components/Character";
-import { EmptyDesk, WindowPane } from "../../../components/art";
+import { EmptyDesk } from "../../../components/art";
+import { WallClock, WindowWall } from "../../../components/scene";
 import Nav from "../../../components/Nav";
 import RequireAuth from "../../../components/RequireAuth";
 import SessionTimer from "../../../components/SessionTimer";
@@ -88,8 +89,13 @@ function RoomView({ roomId }: { roomId: string }) {
           className="glass flex flex-col overflow-hidden rounded-2xl"
           aria-label="People in this room"
         >
-          <WindowPane className="h-24 sm:h-28" />
-          <div className="well min-h-[280px] flex-1 px-5 py-6">
+          <div className="relative">
+            <WindowWall className="h-24 sm:h-32" />
+            <div className="absolute right-4 top-3">
+              <WallClock className="h-12 w-12" />
+            </div>
+          </div>
+          <div className="room-floor min-h-[280px] flex-1 px-5 pb-6 pt-8">
           {members.length === 0 ? (
             <div className="flex h-full min-h-[240px] flex-col items-center justify-center text-center">
               <EmptyDesk />

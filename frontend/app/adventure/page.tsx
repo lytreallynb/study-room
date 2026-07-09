@@ -33,6 +33,24 @@ const STOPS: Stop[] = [
   { level: 20, name: "Horizon Point", blurb: "Legend of the seaside study room." },
 ];
 
+function FloorFurniture({ lit }: { lit: boolean }) {
+  return (
+    <span className="relative block h-8 w-16 shrink-0" aria-hidden="true">
+      {lit && (
+        <span className="pod-poollight anim-lampglow absolute bottom-2.5 left-2 h-3 w-10" />
+      )}
+      <span className="pod-desk-top absolute bottom-1.5 left-1 h-1.5 w-12" />
+      <span className="pod-desk-front absolute bottom-0 left-2 h-1.5 w-10" />
+      <span className="absolute bottom-3 left-3 h-4 w-[2px] rounded-full bg-ink/50" />
+      <span
+        className={`absolute bottom-6 left-3.5 h-1.5 w-2.5 rounded-sm ${
+          lit ? "status-lamp bg-sun" : "bg-ink/40"
+        }`}
+      />
+    </span>
+  );
+}
+
 function YouMarker({ userId, name }: { userId: string; name: string }) {
   const look = characterLook(userId);
   return (
@@ -118,48 +136,57 @@ function AdventureView() {
                   <PathNode reached={reached} current={isCurrent} />
                 </span>
                 <div
-                  className={`mb-2 flex-1 rounded-xl px-4 py-3.5 ${
+                  className={`relative mb-3 flex-1 overflow-hidden rounded-lg border-b-4 ${
                     isCurrent
-                      ? "glass lamp-pool"
+                      ? "glass border-sun/70"
                       : reached
-                        ? "bg-surface/50"
-                        : ""
+                        ? "bg-surface/60 border-line"
+                        : "border-line/50"
                   }`}
                 >
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                    <span
-                      className={`font-display text-lg ${
-                        reached ? "text-ink" : "text-muted"
-                      }`}
-                    >
-                      {stop.name}
-                    </span>
-                    <span className="font-mono text-[11px] text-muted">
-                      lv {stop.level}
-                    </span>
-                  </div>
-                  <p
-                    className={`mt-0.5 text-sm ${
-                      reached ? "text-muted" : "text-muted/60"
-                    }`}
-                  >
-                    {stop.blurb}
-                  </p>
+                  {/* each stop is a floor: light falls onto it when reached */}
                   {isCurrent && (
-                    <div className="mt-3">
-                      <YouMarker userId={user.id} name={user.display_name} />
+                    <div className="lamp-pool absolute inset-0" aria-hidden="true" />
+                  )}
+                  <div className="relative flex items-end gap-4 px-4 pb-3 pt-3.5">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                        <span
+                          className={`font-display text-lg ${
+                            reached ? "text-ink" : "text-muted"
+                          }`}
+                        >
+                          {stop.name}
+                        </span>
+                        <span className="font-mono text-[11px] text-muted">
+                          lv {stop.level}
+                        </span>
+                      </div>
+                      <p
+                        className={`mt-0.5 text-sm ${
+                          reached ? "text-muted" : "text-muted/60"
+                        }`}
+                      >
+                        {stop.blurb}
+                      </p>
+                      {isCurrent && (
+                        <div className="mt-2.5">
+                          <YouMarker userId={user.id} name={user.display_name} />
+                        </div>
+                      )}
+                      {isNext && next && (
+                        <p className="mt-2 text-sm text-ink">
+                          <span className="font-semibold text-sun">
+                            {xpToNext} xp
+                          </span>{" "}
+                          to go, about {focusedHours} focused{" "}
+                          {focusedHours === 1 ? "hour" : "hours"}, fewer with
+                          word cards.
+                        </p>
+                      )}
                     </div>
-                  )}
-                  {isNext && next && (
-                    <p className="mt-2 text-sm text-ink">
-                      <span className="font-semibold text-sun">
-                        {xpToNext} xp
-                      </span>{" "}
-                      to go, about {focusedHours} focused{" "}
-                      {focusedHours === 1 ? "hour" : "hours"}, fewer with word
-                      cards.
-                    </p>
-                  )}
+                    <FloorFurniture lit={reached} />
+                  </div>
                 </div>
               </li>
             );
