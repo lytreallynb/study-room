@@ -2,14 +2,10 @@
 
 from datetime import date
 
-import pytest
 from httpx import AsyncClient
-from redis.asyncio import from_url as redis_from_url
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import redis as redis_mod
-from app.core.config import settings
 from app.models.aggregate import DailyStudyAggregate
 from app.models.user import User
 from app.workers.redis import LEADERBOARD_KEY
@@ -42,19 +38,6 @@ async def test_my_stats_sums_aggregates(
     assert body["total_sessions"] == 3
     assert len(body["days"]) == 2
     assert body["days"][0]["date"] == "2026-06-02"  # most recent first
-
-
-@pytest.fixture
-async def async_redis():
-    """Fresh, loop-bound Redis client patched in for the stats endpoint."""
-    orig = redis_mod.redis_client
-    rds = redis_from_url(settings.redis_url, decode_responses=True)
-    redis_mod.redis_client = rds
-    await rds.flushdb()
-    yield rds
-    await rds.flushdb()
-    await rds.aclose()
-    redis_mod.redis_client = orig
 
 
 async def test_leaderboard_reads_cached_zset(

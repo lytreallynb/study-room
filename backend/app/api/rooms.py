@@ -8,7 +8,8 @@ from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbSession
 from app.models.room import Room
-from app.schemas.room import RoomCreate, RoomRead
+from app.schemas.room import RoomCreate, RoomRead, RoomWithOccupancy
+from app.services import presence
 
 router = APIRouter(prefix="/rooms", tags=["rooms"])
 
@@ -29,15 +30,25 @@ async def create_room(
     return room
 
 
-@router.get("", response_model=list[RoomRead])
-async def list_rooms(current_user: CurrentUser, db: DbSession) -> list[Room]:
-    """Public rooms plus any room owned by the caller."""
+@router.get("", response_model=list[RoomWithOccupancy])
+async def list_rooms(
+    current_user: CurrentUser, db: DbSession
+) -> list[RoomWithOccupancy]:
+    """Public rooms plus any room owned by the caller, with live occupancy
+    from Redis presence so the directory shows which rooms are awake."""
     result = await db.execute(
         select(Room)
         .where((Room.is_public.is_(True)) | (Room.owner_id == current_user.id))
         .order_by(Room.created_at.desc())
     )
-    return list(result.scalars().all())
+    rooms = list(result.scalars().all())
+    return [
+        RoomWithOccupancy(
+            **RoomRead.model_validate(room).model_dump(),
+            occupancy=await presence.member_count(str(room.id)),
+        )
+        for room in rooms
+    ]
 
 
 @router.get("/{room_id}", response_model=RoomRead)

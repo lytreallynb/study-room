@@ -99,8 +99,16 @@ function RoomsList() {
                 className="group flex flex-col gap-3 rounded-2xl border border-night-line bg-night-raised p-5 transition-colors hover:border-lamp/60"
               >
                 {/* door plate */}
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-night font-mono text-sm text-lamp">
-                  {room.name.slice(0, 2).toUpperCase()}
+                <div className="flex items-start justify-between">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-night font-mono text-sm text-lamp">
+                    {room.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  {(room.occupancy ?? 0) > 0 && (
+                    <span className="flex items-center gap-1.5 rounded-full bg-night px-2.5 py-1 font-mono text-xs text-lamp">
+                      <span className="h-1.5 w-1.5 rounded-full bg-lamp" />
+                      {room.occupancy} inside
+                    </span>
+                  )}
                 </div>
                 <div>
                   <h2 className="font-display text-lg text-paper group-hover:text-lamp">

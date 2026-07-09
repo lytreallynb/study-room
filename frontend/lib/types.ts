@@ -22,6 +22,8 @@ export interface Room {
   capacity: number;
   is_public: boolean;
   created_at: string;
+  // Live member count (only present on the list endpoint).
+  occupancy?: number;
 }
 
 export type SessionStatus = "active" | "paused" | "ended";

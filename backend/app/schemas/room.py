@@ -21,3 +21,8 @@ class RoomRead(BaseModel):
     capacity: int
     is_public: bool
     created_at: datetime
+
+
+class RoomWithOccupancy(RoomRead):
+    # Live member count from Redis presence; 0 when the room is dark.
+    occupancy: int = 0

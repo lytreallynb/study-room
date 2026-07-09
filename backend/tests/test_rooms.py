@@ -76,3 +76,22 @@ async def test_only_owner_can_delete(client: AsyncClient) -> None:
     # Owner can.
     ok = await client.delete(f"/rooms/{room_id}", headers=owner_headers)
     assert ok.status_code == 204
+
+
+async def test_room_listing_includes_live_occupancy(
+    client: AsyncClient, auth_headers: dict[str, str], async_redis
+) -> None:
+    from app.services import presence
+
+    room_id = (
+        await client.post("/rooms", json={"name": "Occupancy Hall"}, headers=auth_headers)
+    ).json()["id"]
+
+    listing = await client.get("/rooms", headers=auth_headers)
+    room = next(r for r in listing.json() if r["id"] == room_id)
+    assert room["occupancy"] == 0
+
+    await presence.add_member(room_id, "user-1", "momo", status="focusing")
+    listing = await client.get("/rooms", headers=auth_headers)
+    room = next(r for r in listing.json() if r["id"] == room_id)
+    assert room["occupancy"] == 1

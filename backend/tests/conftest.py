@@ -19,7 +19,11 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.pool import NullPool
 
+from redis.asyncio import from_url as redis_from_url
+
+from app.core.config import settings
 from app.core.db import get_session
+from app.core import redis as redis_mod
 from app.main import app
 from app.models import Base
 
@@ -80,3 +84,18 @@ async def auth_headers(client: AsyncClient) -> dict[str, str]:
     )
     token = resp.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+async def async_redis():
+    """Fresh, loop-bound Redis client patched in for endpoints that read
+    Redis (stats leaderboard, room occupancy). The module-level client binds
+    to the first event loop it touches, so per-test tests must swap it."""
+    orig = redis_mod.redis_client
+    rds = redis_from_url(settings.redis_url, decode_responses=True)
+    redis_mod.redis_client = rds
+    await rds.flushdb()
+    yield rds
+    await rds.flushdb()
+    await rds.aclose()
+    redis_mod.redis_client = orig
