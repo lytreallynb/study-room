@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { useAuth } from "../lib/auth";
+import { LogoMark } from "./art";
 import CoinIcon from "./CoinIcon";
 
 const LINKS = [
@@ -21,9 +22,12 @@ export default function Nav() {
       <nav className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-4">
         <Link
           href="/"
-          className="font-display text-lg font-semibold tracking-tight text-ink"
+          className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-ink"
         >
-          Study<span className="text-sun">Sync</span>
+          <LogoMark />
+          <span>
+            Study<span className="text-sun">Sync</span>
+          </span>
         </Link>
 
         {status === "authenticated" && (

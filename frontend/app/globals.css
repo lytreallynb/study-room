@@ -25,9 +25,9 @@
   --color-sun-soft: var(--sun-soft);
   --color-mint: var(--mint);
   --color-coral: var(--coral);
-  --font-display: var(--font-fraunces);
-  --font-sans: var(--font-karla);
-  --font-mono: var(--font-spline-mono);
+  --font-display: var(--font-baloo);
+  --font-sans: var(--font-nunito);
+  --font-mono: var(--font-sono);
 }
 
 html {
@@ -36,7 +36,7 @@ html {
 
 body {
   color: var(--ink);
-  font-family: var(--font-karla), system-ui, sans-serif;
+  font-family: var(--font-nunito), system-ui, sans-serif;
   /* the view from the desk: morning sun, sky, sea, a strip of sand */
   background:
     radial-gradient(

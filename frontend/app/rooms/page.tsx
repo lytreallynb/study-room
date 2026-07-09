@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 
 import Nav from "../../components/Nav";
+import { EmptyBeach } from "../../components/art";
 import RequireAuth from "../../components/RequireAuth";
 import * as api from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -87,8 +88,9 @@ function RoomsList() {
       {rooms === null ? (
         <p className="mt-10 text-muted">Looking down the hallway...</p>
       ) : rooms.length === 0 ? (
-        <div className="mt-10 rounded-3xl border border-dashed border-line p-10 text-center text-muted">
-          Every room is dark. Open the first one and turn a lamp on.
+        <div className="mt-10 flex flex-col items-center rounded-3xl border border-dashed border-line p-10 text-center text-muted">
+          <EmptyBeach />
+          <p className="mt-4">Every room is quiet. Open the first one and take a seat.</p>
         </div>
       ) : (
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -9,6 +9,7 @@ import { useEffect } from "react";
 
 import Character from "../components/Character";
 import Nav from "../components/Nav";
+import { SeasideScene } from "../components/art";
 import { useAuth } from "../lib/auth";
 
 export default function LandingPage() {
@@ -36,11 +37,14 @@ export default function LandingPage() {
           there. When you take a break, everyone sees the coffee come out.
         </p>
 
-        {/* three live desks: the product, demonstrated */}
-        <div className="mt-12 flex flex-wrap items-end justify-center gap-2 glass rounded-3xl px-6 py-8">
-          <Character userId="demo-momo" displayName="momo" status="focusing" />
-          <Character userId="demo-juno" displayName="juno" status="break" />
-          <Character userId="demo-pip" displayName="pip" status="idle" />
+        {/* the room itself: a window onto the sea, three desks in front */}
+        <div className="glass relative mt-12 w-full max-w-2xl overflow-hidden rounded-3xl">
+          <SeasideScene className="h-36 w-full" />
+          <div className="relative -mt-10 flex flex-wrap items-end justify-center gap-2 px-6 pb-6">
+            <Character userId="demo-momo" displayName="momo" status="focusing" />
+            <Character userId="demo-juno" displayName="juno" status="break" />
+            <Character userId="demo-pip" displayName="pip" status="idle" />
+          </div>
         </div>
 
         <div className="mt-12 flex gap-4">

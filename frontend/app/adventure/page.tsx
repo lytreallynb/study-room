@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import Nav from "../../components/Nav";
 import RequireAuth from "../../components/RequireAuth";
 import CoinIcon from "../../components/CoinIcon";
+import { StopIcon } from "../../components/art";
 import { characterLook } from "../../lib/character";
 import * as api from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -34,28 +35,49 @@ const STOPS: Stop[] = [
 
 function Traveler({ userId }: { userId: string }) {
   const look = characterLook(userId);
+  const pointyEars = ["cat", "fox", "owl"].includes(look.species);
+  const roundEars = look.species === "bear";
+  const tallEars = look.species === "rabbit";
   return (
-    <svg viewBox="0 0 40 44" className="anim-walkbob h-11 w-10">
-      <path d="M8 40 Q8 24 20 24 Q32 24 32 40 Z" fill={look.body} />
-      <circle cx="20" cy="16" r="11" fill={look.body} />
-      {look.seed % 3 === 0 && (
+    <svg viewBox="0 0 40 48" className="anim-walkbob h-12 w-10">
+      <path d="M8 44 Q8 28 20 28 Q32 28 32 44 Z" fill={look.body} />
+      {look.species === "penguin" && (
+        <path d="M13 44 Q13 32 20 32 Q27 32 27 44 Z" fill={look.belly} />
+      )}
+      <circle cx="20" cy="20" r="11" fill={look.body} />
+      {pointyEars && (
         <>
-          <circle cx="12" cy="8" r="3.5" fill={look.body} />
-          <circle cx="28" cy="8" r="3.5" fill={look.body} />
+          <path d="M11 14 l-3 -8 l8 3.5 Z" fill={look.body} />
+          <path d="M29 14 l3 -8 l-8 3.5 Z" fill={look.body} />
         </>
       )}
-      {look.seed % 3 === 1 && (
+      {roundEars && (
         <>
-          <path d="M11 10 l-3 -7 l7 3 Z" fill={look.bodyDark} />
-          <path d="M29 10 l3 -7 l-7 3 Z" fill={look.bodyDark} />
+          <circle cx="12" cy="11" r="4" fill={look.body} />
+          <circle cx="28" cy="11" r="4" fill={look.body} />
         </>
+      )}
+      {tallEars && (
+        <>
+          <ellipse cx="14" cy="4" rx="3.2" ry="8" fill={look.body} />
+          <ellipse cx="26" cy="4" rx="3.2" ry="8" fill={look.body} />
+        </>
+      )}
+      {look.species === "frog" && (
+        <>
+          <circle cx="14" cy="10" r="4" fill={look.body} />
+          <circle cx="26" cy="10" r="4" fill={look.body} />
+        </>
+      )}
+      {(look.species === "penguin" || look.species === "owl") && (
+        <path d="M18 22 l2 2.5 l2 -2.5 z" fill="#F0A24A" />
       )}
       <g fill="#3A3050">
-        <circle cx="16" cy="16" r="1.7" />
-        <circle cx="24" cy="16" r="1.7" />
+        <circle cx="16" cy="19" r="1.7" />
+        <circle cx="24" cy="19" r="1.7" />
       </g>
-      {/* tiny backpack: an adventurer, not a student, tonight */}
-      <rect x="4" y="26" width="7" height="9" rx="2" fill={look.bodyDark} />
+      {/* tiny backpack: an adventurer today, a student tonight */}
+      <rect x="4" y="30" width="7" height="9" rx="2" fill={look.bodyDark} />
     </svg>
   );
 }
@@ -156,8 +178,13 @@ function AdventureView() {
                           : "border-line bg-white/70"
                     }`}
                   />
+                  <StopIcon
+                    index={i}
+                    reached={reached}
+                    className="mx-auto mt-2 h-7 w-7"
+                  />
                   <p
-                    className={`mt-2 text-xs font-bold ${
+                    className={`mt-1 text-xs font-bold ${
                       reached ? "text-ink" : "text-muted"
                     }`}
                   >

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { use, useCallback, useEffect, useState } from "react";
 
 import Character from "../../../components/Character";
+import { EmptyBeach } from "../../../components/art";
 import Nav from "../../../components/Nav";
 import RequireAuth from "../../../components/RequireAuth";
 import SessionTimer from "../../../components/SessionTimer";
@@ -89,7 +90,8 @@ function RoomView({ roomId }: { roomId: string }) {
         >
           {members.length === 0 ? (
             <div className="flex h-full min-h-[280px] flex-col items-center justify-center text-center">
-              <p className="text-muted">
+              <EmptyBeach />
+              <p className="mt-4 text-muted">
                 {connState === "live"
                   ? "The room is empty and dark."
                   : "Finding your desk..."}

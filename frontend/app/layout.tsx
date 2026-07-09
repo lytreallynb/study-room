@@ -1,25 +1,28 @@
 import type { Metadata } from "next";
-import { Fraunces, Karla, Spline_Sans_Mono } from "next/font/google";
+import { Baloo_2, Nunito, Sono } from "next/font/google";
 
 import { AuthProvider } from "../lib/auth";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Rounded, sun-warmed type for a seaside room: Baloo 2 carries headings
+// (chunky, friendly), Nunito carries body text (soft humanist), and Sono, a
+// soft monospace, carries the timer and stat numerals.
+const baloo = Baloo_2({
+  variable: "--font-baloo",
   subsets: ["latin"],
-  weight: ["400", "600"],
+  weight: ["600", "700"],
 });
 
-const karla = Karla({
-  variable: "--font-karla",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "600", "700", "800"],
 });
 
-const splineMono = Spline_Sans_Mono({
-  variable: "--font-spline-mono",
+const sono = Sono({
+  variable: "--font-sono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -36,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${karla.variable} ${splineMono.variable} h-full antialiased`}
+      className={`${baloo.variable} ${nunito.variable} ${sono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* ambient surf on the horizon, behind everything */}
