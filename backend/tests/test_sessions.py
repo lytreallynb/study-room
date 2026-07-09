@@ -98,3 +98,47 @@ async def test_cannot_operate_on_others_session(client: AsyncClient) -> None:
         f"/sessions/{sid}/end", headers={"Authorization": f"Bearer {b_token}"}
     )
     assert resp.status_code == 404
+
+
+async def test_ending_a_session_grants_focus_rewards(
+    client: AsyncClient, auth_headers: dict[str, str], db: AsyncSession
+) -> None:
+    """One coin and one XP per focused minute, applied server-side on end."""
+    sid = (
+        await client.post("/sessions", json={}, headers=auth_headers)
+    ).json()["id"]
+
+    session = await db.get(StudySession, UUID(sid))
+    assert session is not None
+    session.last_resumed_at = datetime.now(timezone.utc) - timedelta(minutes=30)
+    await db.commit()
+
+    end = await client.post(f"/sessions/{sid}/end", headers=auth_headers)
+    assert end.status_code == 200
+    reward = end.json()["reward"]
+    assert reward["coins_earned"] == 30
+    assert reward["xp_earned"] == 30
+    assert reward["level"] == 1
+    assert reward["leveled_up"] is False
+
+    me = (await client.get("/auth/me", headers=auth_headers)).json()
+    assert me["coins"] == 30
+    assert me["xp"] == 30
+
+
+async def test_two_focused_hours_levels_up(
+    client: AsyncClient, auth_headers: dict[str, str], db: AsyncSession
+) -> None:
+    sid = (
+        await client.post("/sessions", json={}, headers=auth_headers)
+    ).json()["id"]
+    session = await db.get(StudySession, UUID(sid))
+    assert session is not None
+    session.last_resumed_at = datetime.now(timezone.utc) - timedelta(hours=2)
+    await db.commit()
+
+    reward = (
+        await client.post(f"/sessions/{sid}/end", headers=auth_headers)
+    ).json()["reward"]
+    assert reward["leveled_up"] is True
+    assert reward["level"] == 2

@@ -29,3 +29,18 @@ class SessionRead(BaseModel):
     # reloading client resume its timer display without guessing.
     last_resumed_at: datetime | None
     focus_seconds: int
+
+
+class RewardRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    coins_earned: int
+    xp_earned: int
+    level: int
+    leveled_up: bool
+
+
+class SessionEndRead(SessionRead):
+    """End-of-session response: the closed session plus what it earned."""
+
+    reward: RewardRead

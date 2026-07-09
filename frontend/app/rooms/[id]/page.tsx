@@ -10,14 +10,16 @@ import Character from "../../../components/Character";
 import Nav from "../../../components/Nav";
 import RequireAuth from "../../../components/RequireAuth";
 import SessionTimer from "../../../components/SessionTimer";
+import WordPractice from "../../../components/WordPractice";
 import * as api from "../../../lib/api";
 import { useAuth } from "../../../lib/auth";
 import type { PresenceStatus, Room } from "../../../lib/types";
 import { useRoomPresence } from "../../../lib/useRoomPresence";
 
 function RoomView({ roomId }: { roomId: string }) {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [room, setRoom] = useState<Room | null>(null);
+  const [myStatus, setMyStatus] = useState<PresenceStatus>("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
   const { members, connState, roomError, setStatus } = useRoomPresence(
     roomId,
@@ -34,7 +36,10 @@ function RoomView({ roomId }: { roomId: string }) {
   }, [roomId]);
 
   const onPresenceChange = useCallback(
-    (status: PresenceStatus) => setStatus(status),
+    (status: PresenceStatus) => {
+      setStatus(status);
+      setMyStatus(status);
+    },
     [setStatus],
   );
 
@@ -110,9 +115,12 @@ function RoomView({ roomId }: { roomId: string }) {
           )}
         </section>
 
-        {/* your timer */}
+        {/* your timer + word practice while the session runs */}
         <div className="flex flex-col gap-4">
           <SessionTimer roomId={roomId} onPresenceChange={onPresenceChange} />
+          {myStatus !== "idle" && (
+            <WordPractice onReward={() => void refreshUser()} />
+          )}
           {room && (
             <p className="px-2 text-xs text-ink-dim">
               Room seats {room.capacity}. Lamps switch off automatically if

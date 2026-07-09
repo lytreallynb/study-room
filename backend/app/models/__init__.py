@@ -18,6 +18,7 @@ from app.models.session import (
     StudySession,
 )
 from app.models.user import User
+from app.models.word import UserWordProgress, Word
 
 __all__ = [
     "Base",
@@ -33,4 +34,6 @@ __all__ = [
     "MetricEvent",
     "MetricEventType",
     "FeatureFlag",
+    "Word",
+    "UserWordProgress",
 ]

@@ -28,6 +28,8 @@ interface AuthState {
     displayName: string,
   ) => Promise<void>;
   logout: () => void;
+  // Re-fetch /auth/me after something changed coins/xp/level server-side.
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -95,8 +97,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus("anonymous");
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      setUser(await api.me());
+    } catch {
+      // transient failure: keep showing the stale numbers
+    }
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ status, user, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ status, user, login, register, logout, refreshUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

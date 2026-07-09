@@ -163,6 +163,105 @@ body {
   animation: lampglow 3.5s ease-in-out infinite;
 }
 
+/* --- reward + flashcard animations --- */
+
+/* coin pops up from the reward line */
+@keyframes coinpop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.5);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* level-up banner slides in and glows */
+@keyframes levelup {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* flashcard reveal */
+@keyframes cardflip {
+  0% {
+    opacity: 0;
+    transform: rotateX(70deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0);
+  }
+}
+
+/* small floating "+2 xp" style toast */
+@keyframes floatup {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+/* adventure character walking in place */
+@keyframes walkbob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.anim-coinpop {
+  animation: coinpop 0.5s ease-out both;
+}
+.anim-levelup {
+  animation: levelup 0.6s ease-out both;
+}
+.anim-cardflip {
+  animation: cardflip 0.35s ease-out both;
+  transform-origin: 50% 80%;
+}
+.anim-floatup {
+  animation: floatup 1.4s ease-out both;
+}
+.anim-walkbob {
+  animation: walkbob 0.9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-coinpop,
+  .anim-levelup,
+  .anim-cardflip,
+  .anim-floatup,
+  .anim-walkbob {
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .anim-breathe,
   .anim-sway,

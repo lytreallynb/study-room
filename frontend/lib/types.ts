@@ -6,8 +6,16 @@ export interface User {
   display_name: string;
   coins: number;
   level: number;
+  xp: number;
   character_config: Record<string, unknown>;
   created_at: string;
+}
+
+export interface Reward {
+  coins_earned: number;
+  xp_earned: number;
+  level: number;
+  leveled_up: boolean;
 }
 
 export interface Token {
@@ -37,6 +45,30 @@ export interface StudySession {
   ended_at: string | null;
   last_resumed_at: string | null;
   focus_seconds: number;
+}
+
+export interface SessionEnd extends StudySession {
+  reward: Reward;
+}
+
+export interface PracticeCard {
+  id: string;
+  term: string;
+  pos: string;
+  definition: string;
+  translation: string;
+  example: string;
+  // Leitner box 1..5 if reviewed before, null for a brand-new card.
+  box: number | null;
+}
+
+export interface ReviewResult {
+  word_id: string;
+  box: number;
+  due_at: string;
+  correct_count: number;
+  wrong_count: number;
+  reward: Reward;
 }
 
 export interface DailyStat {

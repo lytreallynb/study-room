@@ -10,7 +10,26 @@
 import { useCallback, useEffect, useState } from "react";
 
 import * as api from "../lib/api";
-import type { PresenceStatus, StudySession } from "../lib/types";
+import { useAuth } from "../lib/auth";
+import type {
+  PresenceStatus,
+  Reward,
+  SessionEnd,
+  StudySession,
+} from "../lib/types";
+import CoinIcon from "./CoinIcon";
+
+/* Counts 0 -> value over ~0.8s so earned coins feel earned. */
+function CountUp({ value }: { value: number }) {
+  const [shown, setShown] = useState(value === 0 ? 0 : 1);
+  useEffect(() => {
+    if (shown >= value) return;
+    const step = Math.max(1, Math.round(value / 24));
+    const t = setTimeout(() => setShown((s) => Math.min(value, s + step)), 33);
+    return () => clearTimeout(t);
+  }, [shown, value]);
+  return <>{shown}</>;
+}
 
 function elapsedSeconds(session: StudySession, now: number): number {
   let total = session.focus_seconds;
@@ -36,7 +55,9 @@ interface Props {
 }
 
 export default function SessionTimer({ roomId, onPresenceChange }: Props) {
+  const { refreshUser } = useAuth();
   const [session, setSession] = useState<StudySession | null>(null);
+  const [reward, setReward] = useState<Reward | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -75,7 +96,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
 
   const act = useCallback(
     async (
-      fn: () => Promise<StudySession>,
+      fn: () => Promise<StudySession | SessionEnd>,
       presence: PresenceStatus,
     ): Promise<void> => {
       setBusy(true);
@@ -84,13 +105,19 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
         const next = await fn();
         setSession(next);
         onPresenceChange(presence);
+        if ("reward" in next) {
+          setReward(next.reward);
+          void refreshUser(); // nav coins/level pick up the grant
+        } else {
+          setReward(null);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
         setBusy(false);
       }
     },
-    [onPresenceChange],
+    [onPresenceChange, refreshUser],
   );
 
   const running = session !== null && session.status !== "ended";
@@ -121,6 +148,24 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
         <p className="mt-2 text-sm text-mint">
           Logged {fmt(session.focus_seconds)} of focus. It counts.
         </p>
+      )}
+      {reward && (reward.coins_earned > 0 || reward.xp_earned > 0) && (
+        <div className="mt-3 flex flex-col gap-2">
+          <p className="anim-coinpop flex items-center gap-2 text-sm font-bold text-lamp">
+            <CoinIcon />
+            +<CountUp value={reward.coins_earned} /> coins
+            <span className="text-ink-dim">·</span>
+            <span className="text-paper">
+              +<CountUp value={reward.xp_earned} /> xp
+            </span>
+          </p>
+          {reward.leveled_up && (
+            <p className="anim-levelup rounded-lg bg-lamp-soft px-3 py-2 text-sm font-bold text-lamp">
+              Level up! You reached level {reward.level}. The road on your
+              adventure map just got longer.
+            </p>
+          )}
+        </div>
       )}
 
       <div className="mt-5 flex flex-wrap gap-2">

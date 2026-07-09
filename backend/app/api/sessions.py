@@ -6,7 +6,12 @@ from uuid import UUID
 from fastapi import APIRouter, status
 
 from app.api.deps import CurrentUser, DbSession
-from app.schemas.session import SessionRead, SessionStartRequest
+from app.schemas.session import (
+    RewardRead,
+    SessionEndRead,
+    SessionRead,
+    SessionStartRequest,
+)
 from app.services import sessions as svc
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
@@ -29,9 +34,13 @@ async def resume_session(session_id: UUID, current_user: CurrentUser, db: DbSess
     return await svc.resume_session(db, current_user, session_id)
 
 
-@router.post("/{session_id}/end", response_model=SessionRead)
+@router.post("/{session_id}/end", response_model=SessionEndRead)
 async def end_session(session_id: UUID, current_user: CurrentUser, db: DbSession):
-    return await svc.end_session(db, current_user, session_id)
+    session, reward = await svc.end_session(db, current_user, session_id)
+    return SessionEndRead(
+        **SessionRead.model_validate(session).model_dump(),
+        reward=RewardRead.model_validate(reward),
+    )
 
 
 @router.get("", response_model=list[SessionRead])

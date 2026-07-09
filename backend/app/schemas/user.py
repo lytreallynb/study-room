@@ -25,6 +25,7 @@ class UserRead(BaseModel):
     display_name: str
     coins: int
     level: int
+    xp: int
     character_config: dict
     created_at: datetime
 

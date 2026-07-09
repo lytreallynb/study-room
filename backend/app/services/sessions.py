@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.metrics import sessions_started_total
 from app.models.room import Room
+from app.services import rewards
 from app.models.session import (
     SessionEvent,
     SessionEventType,
@@ -128,7 +129,9 @@ async def resume_session(
     return session
 
 
-async def end_session(db: AsyncSession, user: User, session_id: UUID) -> StudySession:
+async def end_session(
+    db: AsyncSession, user: User, session_id: UUID
+) -> tuple[StudySession, rewards.Reward]:
     session = await _get_owned_session(db, user, session_id)
     if session.status == SessionStatus.ended:
         raise HTTPException(status.HTTP_409_CONFLICT, "Session already ended")
@@ -140,9 +143,11 @@ async def end_session(db: AsyncSession, user: User, session_id: UUID) -> StudySe
     session.ended_at = now
     session.last_resumed_at = None
     db.add(SessionEvent(session_id=session.id, type=SessionEventType.end, ts=now))
+    # Rewards come from the server-verified focus time, same transaction.
+    reward = rewards.grant_focus_reward(user, session.focus_seconds)
     await db.commit()
     await db.refresh(session)
-    return session
+    return session, reward
 
 
 async def list_sessions(db: AsyncSession, user: User) -> list[StudySession]:

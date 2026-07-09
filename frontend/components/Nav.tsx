@@ -4,9 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { useAuth } from "../lib/auth";
+import CoinIcon from "./CoinIcon";
 
 const LINKS = [
   { href: "/rooms", label: "Rooms" },
+  { href: "/adventure", label: "Adventure" },
   { href: "/stats", label: "My desk" },
 ];
 
@@ -45,6 +47,16 @@ export default function Nav() {
         <div className="ml-auto flex items-center gap-4 text-sm">
           {status === "authenticated" && user ? (
             <>
+              <span
+                className="flex items-center gap-1.5 rounded-full bg-night-raised px-3 py-1 font-mono text-xs text-lamp"
+                title="Coins earned from focus and word practice"
+              >
+                <CoinIcon className="h-3.5 w-3.5" />
+                {user.coins}
+              </span>
+              <span className="rounded-full bg-night-raised px-3 py-1 font-mono text-xs text-mint">
+                lv {user.level}
+              </span>
               <span className="hidden text-ink-dim sm:inline">
                 {user.display_name}
               </span>

@@ -12,10 +12,12 @@ Exits non-zero on any failed expectation. Screenshots land in SHOTS_DIR.
 import os
 import sys
 import time
+import urllib.request
 
 from playwright.sync_api import expect, sync_playwright
 
 BASE = os.getenv("E2E_BASE_URL", "http://localhost:3000")
+API = os.getenv("E2E_API_URL", "http://localhost:8010")
 SHOTS = os.getenv("E2E_SHOTS_DIR", "/tmp/studysync-e2e-shots")
 STAMP = int(time.time())
 
@@ -73,6 +75,18 @@ def main() -> int:
         expect(a.get_by_text("not in room")).not_to_be_visible()
         print("ok: A reloaded mid-session, timer restored, no join race")
 
+        # Word practice rides along with the session; five correct reviews
+        # grant XP each and exactly one coin (nav badge flips 0 -> 1).
+        expect(a.get_by_text("word cards")).to_be_visible(timeout=10000)
+        for _ in range(5):
+            a.get_by_role("button", name="Tap to reveal the meaning").click()
+            a.get_by_role("button", name="I knew it").click()
+        expect(a.get_by_text("5/5 this sit")).to_be_visible(timeout=10000)
+        expect(a.locator("header").get_by_text("1", exact=True)).to_be_visible(
+            timeout=10000
+        )
+        print("ok: 5 correct word reviews granted XP and a coin")
+
         # B registers and walks into the same room
         register(b, "juno", f"juno-{STAMP}@example.com")
         print("ok: user B registered")
@@ -123,6 +137,27 @@ def main() -> int:
         expect(a.get_by_text("hall of focus")).to_be_visible(timeout=10000)
         a.screenshot(path=f"{SHOTS}/04-stats.png", full_page=True)
         print("ok: A ended session; stats page renders")
+
+        # Adventure map: the review XP puts A's traveler on the road
+        a.goto(f"{BASE}/adventure")
+        expect(a.get_by_text("The night road")).to_be_visible(timeout=10000)
+        expect(a.get_by_text("Dorm Desk")).to_be_visible()
+        expect(a.get_by_text("xp total")).to_be_visible()
+        a.screenshot(path=f"{SHOTS}/05-adventure.png", full_page=True)
+        print("ok: adventure map renders with progress")
+
+        # Leave no junk behind: B ends their session, A deletes the room.
+        b.get_by_role("button", name="End session").click()
+        expect(b.get_by_text("It counts.")).to_be_visible(timeout=10000)
+        token = a.evaluate("localStorage.getItem('studysync_token')")
+        room_id = room_url.rstrip("/").split("/")[-1]
+        req = urllib.request.Request(
+            f"{API}/rooms/{room_id}",
+            method="DELETE",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        urllib.request.urlopen(req)
+        print("ok: cleaned up the test room")
 
         browser.close()
 

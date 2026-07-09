@@ -5,7 +5,10 @@
 import type {
   LeaderboardEntry,
   MyStats,
+  PracticeCard,
+  ReviewResult,
   Room,
+  SessionEnd,
   StudySession,
   Token,
   User,
@@ -142,14 +145,30 @@ export function resumeSession(sessionId: string): Promise<StudySession> {
   });
 }
 
-export function endSession(sessionId: string): Promise<StudySession> {
-  return request<StudySession>(`/sessions/${sessionId}/end`, {
+export function endSession(sessionId: string): Promise<SessionEnd> {
+  return request<SessionEnd>(`/sessions/${sessionId}/end`, {
     method: "POST",
   });
 }
 
 export function listSessions(): Promise<StudySession[]> {
   return request<StudySession[]>("/sessions");
+}
+
+// --- words ---
+
+export function practiceCards(limit = 10): Promise<PracticeCard[]> {
+  return request<PracticeCard[]>(`/words/practice?limit=${limit}`);
+}
+
+export function reviewWord(
+  wordId: string,
+  known: boolean,
+): Promise<ReviewResult> {
+  return request<ReviewResult>(`/words/${wordId}/review`, {
+    method: "POST",
+    body: JSON.stringify({ known }),
+  });
 }
 
 // --- stats ---
