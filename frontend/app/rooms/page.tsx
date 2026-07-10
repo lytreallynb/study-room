@@ -25,7 +25,7 @@ function DoorGlass({ count }: { count: number }) {
     { left: "64%", top: "30%" },
   ];
   return (
-    <div className="door-glass relative h-24 overflow-hidden rounded-t-lg border border-ink/10">
+    <div className="door-glass relative h-24 overflow-hidden rounded-t-lg border border-ink/10" aria-hidden="true">
       {/* the room is lit in proportion to how many are inside */}
       <div
         className="absolute inset-0 transition-opacity duration-500"
@@ -139,14 +139,39 @@ function RoomsList() {
           </p>
         </div>
       ) : (
-        <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           {rooms.map((room) => (
             <li key={room.id}>
               <Link
                 href={`/rooms/${room.id}`}
-                className="group block"
-                title={`${room.name}, ${room.occupancy ?? 0} inside`}
+                className="group block rounded-lg"
               >
+                {/* small screens: a tappable row with a sliver of door glass */}
+                <span className="glass flex items-center gap-3 rounded-lg px-3 py-2.5 sm:hidden">
+                  <span className="door-glass relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-ink/10" aria-hidden="true">
+                    {(room.occupancy ?? 0) > 0 && (
+                      <span
+                        className="status-lamp absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sun shadow-[0_0_8px_3px_rgba(245,196,120,0.6)]"
+                      />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-display text-base text-ink">
+                      {room.name}
+                    </span>
+                    <span className="block font-mono text-[11px] text-muted">
+                      seats {room.capacity}
+                      {room.owner_id === user?.id ? " · yours" : ""}
+                    </span>
+                  </span>
+                  <span className="shrink-0 font-mono text-[11px] text-muted">
+                    {(room.occupancy ?? 0) > 0
+                      ? `${room.occupancy} inside`
+                      : "quiet"}
+                  </span>
+                </span>
+                {/* larger screens: the full door */}
+                <span className="hidden sm:block">
                 {/* the door: glass above, wood below, plate and handle */}
                 <div className="overflow-hidden rounded-lg shadow-[0_10px_24px_-12px_rgba(43,58,62,0.35)] transition-shadow group-hover:shadow-[0_12px_28px_-10px_rgba(184,130,59,0.35)]">
                   <DoorGlass count={room.occupancy ?? 0} />
@@ -167,6 +192,7 @@ function RoomsList() {
                   {(room.occupancy ?? 0) > 0
                     ? `${room.occupancy} inside`
                     : "\u00A0"}
+                </span>
                 </span>
               </Link>
             </li>

@@ -116,12 +116,15 @@ export default function Character({
         <div className="pod-panel absolute inset-x-4 bottom-11 top-6" />
 
         {/* lamp cone falls across the work area while focusing */}
-        {focusing && (
-          <div className="pod-lampcone anim-lampglow absolute bottom-12 left-5 h-16 w-20" />
-        )}
+        <div
+          className={`pod-lampcone absolute bottom-12 left-5 h-16 w-20 transition-opacity duration-700 ${
+            focusing ? "anim-lampglow opacity-100" : "opacity-0"
+          }`}
+        />
 
         {/* chair back peeking behind the occupant */}
         <div className="pod-chair absolute bottom-11 left-1/2 h-10 w-16 -translate-x-1/2" />
+        <div className="absolute bottom-[42px] left-1/2 h-1 w-14 -translate-x-1/2 rounded-full bg-ink/10" />
 
         {/* the occupant */}
         <div className="absolute bottom-9 left-1/2 -translate-x-1/2">
@@ -130,10 +133,11 @@ export default function Character({
 
         {/* reading lamp on the left desk edge */}
         <div className="absolute bottom-12 left-5 h-12 w-8" aria-hidden="true">
+          <div className="absolute bottom-0 left-0 h-1 w-4 rounded-sm bg-ink/55" />
           <div className="absolute bottom-0 left-1 h-9 w-[2.5px] rounded-full bg-ink/60" />
           <div className="absolute left-1 top-1 h-[2.5px] w-5 rounded-full bg-ink/60" style={{ transform: "rotate(18deg)", transformOrigin: "0 50%" }} />
           <div
-            className={`absolute right-0 top-2 h-2.5 w-3.5 rounded-sm ${
+            className={`absolute right-0 top-2 h-2.5 w-3.5 rounded-sm transition-colors duration-700 ${
               focusing ? "bg-sun" : onBreak ? "bg-sun/50" : "bg-ink/50"
             } ${focusing ? "anim-lampglow" : ""}`}
             style={{ transform: "rotate(18deg)" }}
@@ -142,35 +146,42 @@ export default function Character({
 
         {/* desk: lit pool, top, front */}
         <div className="absolute inset-x-1 bottom-6 h-6">
-          {focusing && (
-            <div className="pod-poollight anim-lampglow absolute -top-3 inset-x-2 h-4" />
-          )}
+          <div
+            className={`pod-poollight absolute -top-3 inset-x-2 h-4 transition-opacity duration-700 ${
+              focusing ? "anim-lampglow opacity-100" : "opacity-0"
+            }`}
+          />
           <div className="pod-desk-top absolute inset-x-0 top-0 h-2.5" />
           <div className="pod-desk-front absolute inset-x-1 bottom-0 top-2.5" />
         </div>
 
-        {/* desk objects */}
-        {focusing ? (
-          /* open book: two leaves */
-          <div className="absolute bottom-[46px] left-1/2 flex -translate-x-1/2" aria-hidden="true">
-            <div className="h-2 w-4 rounded-l-sm bg-[#F0EBDC] shadow-[inset_-1px_0_0_#DAD2BC]" style={{ transform: "skewY(-6deg)" }} />
-            <div className="h-2 w-4 rounded-r-sm bg-[#F0EBDC] shadow-[inset_1px_0_0_#DAD2BC]" style={{ transform: "skewY(6deg)" }} />
-          </div>
-        ) : (
-          /* mug, steaming on a break */
-          <div className="absolute bottom-[46px] right-7" aria-hidden="true">
-            {onBreak && (
-              <>
-                <span className="steam-wisp absolute -top-3 left-0.5" />
-                <span
-                  className="steam-wisp absolute -top-3 left-2"
-                  style={{ animationDelay: "1.2s" }}
-                />
-              </>
-            )}
-            <div className="h-2.5 w-3 rounded-[2px] bg-coral/85" />
-          </div>
-        )}
+        {/* desk objects cross-fade with the state */}
+        <div
+          className={`absolute bottom-[46px] left-1/2 flex -translate-x-1/2 transition-opacity duration-700 ${
+            focusing ? "opacity-100" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        >
+          <div className="h-2 w-4 rounded-l-sm bg-[#F0EBDC] shadow-[inset_-1px_0_0_#DAD2BC]" style={{ transform: "skewY(-6deg)" }} />
+          <div className="h-2 w-4 rounded-r-sm bg-[#F0EBDC] shadow-[inset_1px_0_0_#DAD2BC]" style={{ transform: "skewY(6deg)" }} />
+        </div>
+        <div
+          className={`absolute bottom-[46px] right-7 transition-opacity duration-700 ${
+            focusing ? "opacity-0" : "opacity-100"
+          }`}
+          aria-hidden="true"
+        >
+          {onBreak && (
+            <>
+              <span className="steam-wisp absolute -top-3 left-0.5" />
+              <span
+                className="steam-wisp absolute -top-3 left-2"
+                style={{ animationDelay: "1.2s" }}
+              />
+            </>
+          )}
+          <div className="h-3 w-3.5 rounded-[2px] bg-coral/85 shadow-[inset_0_-1px_0_rgba(0,0,0,0.15)]" />
+        </div>
 
         {/* pod ground shadow */}
         <div className="absolute inset-x-4 bottom-4 h-2 rounded-full bg-ink/10 blur-[3px]" />

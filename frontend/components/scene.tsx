@@ -15,7 +15,7 @@ export function WindowWall({
   children?: React.ReactNode;
 }) {
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div className={`relative overflow-hidden ${className}`} aria-hidden="true">
       <div className="outside-view absolute inset-0" />
       <div className="light-streak" />
       {/* frame */}

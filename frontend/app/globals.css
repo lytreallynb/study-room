@@ -90,28 +90,6 @@ body::before {
   border-bottom: 1px solid rgba(43, 58, 62, 0.08);
 }
 
-/* recessed area inside a panel (room floor, input wells) */
-.well {
-  background:
-    linear-gradient(180deg, rgba(43, 58, 62, 0.045), rgba(43, 58, 62, 0) 24px),
-    rgba(240, 235, 222, 0.6);
-  border: 1px solid rgba(43, 58, 62, 0.06);
-}
-
-/* the dawn window: cool glass band with a light streak */
-.window-pane {
-  background:
-    linear-gradient(
-      115deg,
-      rgba(255, 255, 255, 0) 42%,
-      rgba(255, 255, 255, 0.28) 47%,
-      rgba(255, 255, 255, 0) 55%
-    ),
-    linear-gradient(180deg, #b7cbcd 0%, #ccd8cd 45%, #e8dfc8 85%, #f0e3c4 100%);
-  border: 1px solid rgba(43, 58, 62, 0.1);
-  box-shadow: inset 0 2px 12px rgba(43, 58, 62, 0.12);
-}
-
 /* warm pool a lit desk lamp throws on a surface */
 .lamp-pool {
   background: radial-gradient(
@@ -150,20 +128,6 @@ body::before {
   }
   50% {
     transform: rotate(3deg) translateY(1.5px);
-  }
-}
-
-@keyframes zzz {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0);
-  }
-  30% {
-    opacity: 0.8;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(5px, -10px);
   }
 }
 
@@ -216,13 +180,6 @@ body::before {
   animation: doze 4.5s ease-in-out infinite;
   transform-origin: 50% 100%;
   transform-box: fill-box;
-}
-.anim-zzz {
-  animation: zzz 2.8s ease-out infinite;
-}
-.anim-zzz-late {
-  animation: zzz 2.8s ease-out infinite;
-  animation-delay: 1.4s;
 }
 .anim-steam {
   animation: steam 2.2s ease-out infinite;
@@ -324,8 +281,6 @@ body::before {
   .anim-breathe,
   .anim-sway,
   .anim-doze,
-  .anim-zzz,
-  .anim-zzz-late,
   .anim-steam,
   .anim-steam-late,
   .anim-blink,
@@ -374,8 +329,8 @@ body::before {
   position: absolute;
   top: -20%;
   bottom: -20%;
+  left: 0;
   width: 18%;
-  transform: skewX(-18deg);
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 0%,
@@ -384,14 +339,15 @@ body::before {
   );
   animation: streak-drift 90s linear infinite;
   pointer-events: none;
+  will-change: transform;
 }
 
 @keyframes streak-drift {
   0% {
-    left: -25%;
+    transform: translateX(-140%) skewX(-18deg);
   }
   100% {
-    left: 115%;
+    transform: translateX(660%) skewX(-18deg);
   }
 }
 

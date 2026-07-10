@@ -35,7 +35,7 @@ const STOPS: Stop[] = [
 
 function FloorFurniture({ lit }: { lit: boolean }) {
   return (
-    <span className="relative block h-8 w-16 shrink-0" aria-hidden="true">
+    <span className="relative hidden h-8 w-16 shrink-0 sm:block" aria-hidden="true">
       {lit && (
         <span className="pod-poollight anim-lampglow absolute bottom-2.5 left-2 h-3 w-10" />
       )}

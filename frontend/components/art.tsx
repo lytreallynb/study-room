@@ -19,28 +19,6 @@ export function LogoMark({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
-/* --- the dawn window: a real pane with frame bars and a light streak.
-       Pure CSS; children (e.g. a clock) sit on the glass. --- */
-export function WindowPane({
-  className = "",
-  children,
-}: {
-  className?: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <div className={`window-pane relative overflow-hidden ${className}`}>
-      {/* muntins */}
-      <div className="absolute inset-y-0 left-1/3 w-px bg-ink/15" />
-      <div className="absolute inset-y-0 left-2/3 w-px bg-ink/15" />
-      <div className="absolute inset-x-0 top-1/2 h-px bg-ink/15" />
-      {/* sill shadow */}
-      <div className="absolute inset-x-0 bottom-0 h-1.5 bg-ink/10" />
-      {children}
-    </div>
-  );
-}
-
 /* --- adventure path node: an architectural marker, lit when reached --- */
 export function PathNode({
   reached,
