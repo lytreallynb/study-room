@@ -88,9 +88,15 @@ function RoomView({ roomId }: { roomId: string }) {
           className="glass relative flex flex-col overflow-hidden rounded-2xl"
           aria-label="People in this room"
         >
-          {/* daylight across the seat area */}
+          {/* the room's own lamp over the seats */}
+          <div
+            className={`absolute left-1/2 top-0 w-16 -translate-x-1/2 ${
+              focusing > 0 ? "lamp-strip anim-lampglow" : "lamp-strip-dim"
+            }`}
+            aria-hidden="true"
+          />
           <div className="lamp-pool pointer-events-none absolute inset-x-0 top-0 h-28" aria-hidden="true" />
-          <div className="relative min-h-[300px] flex-1 px-5 py-7 sm:px-7">
+          <div className="relative min-h-[300px] flex-1 px-5 py-8 sm:px-7">
           {members.length === 0 ? (
             <div className="flex h-full min-h-[240px] flex-col items-center justify-center text-center">
               <EmptySeat />
@@ -106,7 +112,7 @@ function RoomView({ roomId }: { roomId: string }) {
               )}
             </div>
           ) : (
-            <div className="flex flex-wrap items-start justify-center gap-4 sm:justify-start sm:gap-5">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] justify-items-center gap-x-3 gap-y-5">
               {members.map((m) => (
                 <Character
                   key={m.user_id}
@@ -116,6 +122,12 @@ function RoomView({ roomId }: { roomId: string }) {
                   isSelf={m.user_id === user?.id}
                 />
               ))}
+              {/* open seats keep a small room from feeling empty */}
+              {members.length > 0 &&
+                Array.from(
+                  { length: Math.min(3 - Math.min(members.length, 3), 2) },
+                  (_, i) => <EmptySeat key={`empty-${i}`} />,
+                )}
             </div>
           )}
           </div>

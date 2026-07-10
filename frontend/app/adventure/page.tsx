@@ -118,17 +118,23 @@ function AdventureView() {
                   <PathNode reached={reached} current={isCurrent} />
                 </span>
                 <div
-                  className={`relative mb-3 flex-1 overflow-hidden rounded-lg border-b-4 ${
+                  className={`relative mb-3 flex-1 overflow-hidden rounded-lg border-b ${
                     isCurrent
-                      ? "glass border-sun/70"
+                      ? "glass border-line"
                       : reached
-                        ? "bg-surface/60 border-line"
-                        : "border-line/50"
+                        ? "border-line bg-surface/60"
+                        : "border-line/60"
                   }`}
                 >
-                  {/* each stop is a floor: light falls onto it when reached */}
+                  {/* each stop is a floor: the current one has its lamp on */}
                   {isCurrent && (
-                    <div className="lamp-pool absolute inset-0" aria-hidden="true" />
+                    <>
+                      <div
+                        className="lamp-strip anim-lampglow absolute left-6 top-0 w-12"
+                        aria-hidden="true"
+                      />
+                      <div className="lamp-pool absolute inset-0" aria-hidden="true" />
+                    </>
                   )}
                   <div className="relative flex items-end gap-4 px-4 pb-3 pt-3.5">
                     <div className="min-w-0 flex-1">

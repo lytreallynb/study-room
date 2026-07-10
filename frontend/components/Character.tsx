@@ -46,13 +46,13 @@ export default function Character({
     <figure
       role="img"
       aria-label={`${displayName}, ${STATUS_LABEL[status]}`}
-      className={`glass w-36 rounded-xl transition-opacity duration-700 ${
+      className={`glass w-36 rounded-xl transition-[opacity,border-color] duration-500 hover:border-ink/20 ${
         idle ? "opacity-55" : "opacity-100"
       }`}
     >
       {/* the light on their desk */}
       <div
-        className="relative h-16 overflow-hidden rounded-t-[11px]"
+        className="relative h-20 overflow-hidden rounded-t-[11px]"
         aria-hidden="true"
       >
         <div
@@ -60,26 +60,30 @@ export default function Character({
             focusing ? "anim-lampglow" : ""
           }`}
         />
-        {/* the lamp itself: a thin warm line at the top edge */}
+        {/* the lamp itself: the brand strip, lit by state */}
         <div
-          className={`absolute left-1/2 top-0 h-[3px] w-10 -translate-x-1/2 rounded-b-full transition-colors duration-700 ${
-            focusing ? "bg-sun" : status === "break" ? "bg-sun/40" : "bg-line"
+          className={`absolute left-1/2 top-0 w-12 -translate-x-1/2 ${
+            focusing
+              ? "lamp-strip"
+              : status === "break"
+                ? "lamp-strip-dim"
+                : "lamp-strip-off"
           }`}
         />
-        {/* a quiet cup of steam marks a break */}
+        {/* a break reads as warm air rising, nothing more */}
         {status === "break" && (
-          <div className="absolute bottom-3 right-4">
-            <span className="steam-wisp absolute -top-3 left-0" />
+          <div className="absolute bottom-4 right-5">
+            <span className="steam-wisp absolute bottom-1 left-0" />
             <span
-              className="steam-wisp absolute -top-3 left-1.5"
+              className="steam-wisp absolute bottom-1 left-1.5"
               style={{ animationDelay: "1.3s" }}
             />
-            <span className="block h-2 w-2.5 rounded-[2px] bg-muted/50" />
+            <span className="absolute -bottom-0.5 left-0 h-[3px] w-[9px] rounded-full bg-muted/40" />
           </div>
         )}
-        {/* monogram, lit from above */}
+        {/* monogram, sitting in the light */}
         <span
-          className="absolute bottom-2.5 left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full font-display text-lg text-ink/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]"
+          className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-[42%] items-center justify-center rounded-full font-display text-xl text-ink/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_1px_3px_rgba(36,41,43,0.12)]"
           style={{ backgroundColor: look.body }}
         >
           {initial}

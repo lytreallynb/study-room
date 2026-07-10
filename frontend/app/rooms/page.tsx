@@ -129,11 +129,17 @@ function RoomsList() {
             <li key={room.id}>
               <Link
                 href={`/rooms/${room.id}`}
-                className="glass group relative flex items-center gap-4 overflow-hidden rounded-xl px-4 py-3.5 transition-colors hover:border-mint/50"
+                className="glass group relative flex items-center gap-4 overflow-hidden rounded-xl px-4 py-3.5 transition-colors hover:border-ink/25"
               >
-                {/* the room's light, visible from the hallway */}
+                {/* the room's lamp, seen from the hallway */}
                 <span
-                  className="lamp-pool pointer-events-none absolute inset-y-0 left-0 w-40 transition-opacity duration-500"
+                  className={`absolute left-8 top-0 w-10 ${
+                    (room.occupancy ?? 0) > 0 ? "lamp-strip anim-lampglow" : "lamp-strip-off"
+                  }`}
+                  aria-hidden="true"
+                />
+                <span
+                  className="lamp-pool pointer-events-none absolute inset-y-0 left-0 w-44 transition-opacity duration-500"
                   style={{ opacity: (room.occupancy ?? 0) > 0 ? 1 : 0 }}
                   aria-hidden="true"
                 />

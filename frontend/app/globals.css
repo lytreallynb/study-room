@@ -80,7 +80,31 @@ body::before {
   border-bottom: 1px solid var(--line);
 }
 
-/* warm wash a lit lamp leaves on a surface below it */
+/* ---- the brand motif: a lamp line and the light it drops ----
+   One thin warm strip (the lamp) and a soft pool falling below it.
+   Lit = amber and breathing; unlit = a quiet hairline. Used on tiles,
+   panels, list rows, and the landing headline. */
+
+.lamp-strip {
+  height: 3px;
+  border-radius: 0 0 999px 999px;
+  background: var(--sun);
+  box-shadow: 0 1px 10px 0 rgba(201, 143, 74, 0.5);
+}
+
+.lamp-strip-dim {
+  height: 3px;
+  border-radius: 0 0 999px 999px;
+  background: rgba(201, 143, 74, 0.4);
+}
+
+.lamp-strip-off {
+  height: 3px;
+  border-radius: 0 0 999px 999px;
+  background: var(--line);
+}
+
+/* warm wash a lit lamp leaves on the surface below it */
 .lamp-pool {
   background: radial-gradient(
     ellipse 70% 100% at 50% 0%,

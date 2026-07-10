@@ -127,7 +127,17 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
     "rounded-lg px-5 py-2 text-sm font-semibold disabled:opacity-50 transition-colors";
 
   return (
-    <section className="glass rounded-2xl p-6">
+    <section className="glass relative overflow-hidden rounded-2xl p-6">
+      <span
+        className={`absolute left-1/2 top-0 w-12 -translate-x-1/2 ${
+          running && !paused
+            ? "lamp-strip anim-lampglow"
+            : running
+              ? "lamp-strip-dim"
+              : "lamp-strip-off"
+        }`}
+        aria-hidden="true"
+      />
       <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
         {running
           ? paused

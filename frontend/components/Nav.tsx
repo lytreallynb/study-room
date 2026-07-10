@@ -36,13 +36,19 @@ export default function Nav() {
               <Link
                 key={l.href}
                 href={l.href}
-                className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+                className={`relative rounded-md px-2.5 py-1 font-medium transition-colors ${
                   pathname.startsWith(l.href)
-                    ? "bg-ink/5 text-ink"
+                    ? "text-ink"
                     : "text-muted hover:text-ink"
                 }`}
               >
                 {l.label}
+                {pathname.startsWith(l.href) && (
+                  <span
+                    className="lamp-strip absolute -bottom-0.5 left-1/2 w-5 -translate-x-1/2"
+                    aria-hidden="true"
+                  />
+                )}
               </Link>
             ))}
           </div>

@@ -23,9 +23,18 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col">
       <Nav />
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-4 pb-16 pt-10">
-        <div className="text-center">
-          <h1 className="font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl">
-            The room is open.
+        <div className="relative text-center">
+          {/* the lamp over the door: the same strip every lit thing carries */}
+          <div
+            className="lamp-strip anim-lampglow mx-auto w-16"
+            aria-hidden="true"
+          />
+          <div
+            className="lamp-pool pointer-events-none absolute inset-x-0 top-0 h-40"
+            aria-hidden="true"
+          />
+          <h1 className="relative mt-10 font-display text-5xl font-medium leading-tight tracking-tight text-ink sm:text-6xl">
+            The room is <em className="italic">open</em>.
           </h1>
           <p className="mx-auto mt-3 max-w-md text-base text-muted">
             Sit down with people who are really studying.
@@ -48,20 +57,15 @@ export default function LandingPage() {
 
         {/* the room, live: three desks under their lamps on one oak line */}
         <div className="relative mt-16 sm:mt-20">
-          {/* daylight falling on the desks */}
-          <div
-            className="lamp-pool pointer-events-none absolute -top-12 left-1/2 h-24 w-[110%] max-w-xl -translate-x-1/2"
-            aria-hidden="true"
-          />
           <div className="relative flex flex-wrap items-end justify-center gap-4 sm:gap-8">
             <Character userId="demo-momo" displayName="momo" status="focusing" />
             <Character userId="demo-juno" displayName="juno" status="break" />
             <Character userId="demo-pip" displayName="pip" status="idle" />
           </div>
-          {/* the desk: one line of oak with its shadow */}
-          <div className="mx-auto mt-5 max-w-xl" aria-hidden="true">
-            <div className="h-[3px] rounded-full bg-wood/70" />
-            <div className="mx-6 h-2 rounded-[50%] bg-ink/[0.07] blur-[2px]" />
+          {/* the surface the seats rest on */}
+          <div className="mx-auto mt-6 max-w-xl" aria-hidden="true">
+            <div className="h-px bg-line" />
+            <div className="mx-8 h-2 rounded-[50%] bg-ink/[0.06] blur-[2px]" />
           </div>
         </div>
       </main>
