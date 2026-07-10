@@ -42,13 +42,13 @@ export default function LandingPage() {
           <div className="mt-7 flex items-center justify-center gap-3">
             <Link
               href="/register"
-              className="rounded-lg bg-mint px-6 py-2.5 font-semibold text-white transition-[filter] hover:brightness-110"
+              className="rounded-full bg-mint px-6 py-2.5 font-semibold text-white shadow-[0_10px_24px_-12px_rgba(91,114,101,0.7)] transition-[filter] hover:brightness-110"
             >
               Take a seat
             </Link>
             <Link
               href="/login"
-              className="rounded-lg px-4 py-2.5 font-medium text-muted transition-colors hover:text-ink"
+              className="rounded-full px-4 py-2.5 font-medium text-ink/70 transition-colors hover:text-ink"
             >
               Log in
             </Link>
@@ -58,14 +58,24 @@ export default function LandingPage() {
         {/* the room, live: three desks under their lamps on one oak line */}
         <div className="relative mt-16 sm:mt-20">
           <div className="relative flex flex-wrap items-end justify-center gap-4 sm:gap-8">
-            <Character userId="demo-momo" displayName="momo" status="focusing" />
-            <Character userId="demo-juno" displayName="juno" status="break" />
-            <Character userId="demo-pip" displayName="pip" status="idle" />
+            <Character
+              userId="demo-momo"
+              displayName="momo"
+              status="focusing"
+              activity="reading"
+            />
+            <Character
+              userId="demo-juno"
+              displayName="juno"
+              status="focusing"
+              activity="coding"
+            />
+            <Character userId="demo-pip" displayName="pip" status="break" />
           </div>
           {/* the surface the seats rest on */}
           <div className="mx-auto mt-6 max-w-xl" aria-hidden="true">
-            <div className="h-px bg-line" />
-            <div className="mx-8 h-2 rounded-[50%] bg-ink/[0.06] blur-[2px]" />
+            <div className="h-px bg-white/70" />
+            <div className="mx-8 h-2 rounded-[50%] bg-ink/[0.08] blur-[2px]" />
           </div>
         </div>
       </main>

@@ -40,10 +40,10 @@ export default function AuthForm({ mode }: Props) {
   }
 
   const inputCls =
-    "w-full rounded-lg border border-line bg-surface px-3.5 py-2.5 text-ink placeholder:text-muted/60";
+    "w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-ink placeholder:text-muted/60";
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="glass w-full max-w-sm rounded-3xl p-7 sm:p-8">
       <h1 className="font-display text-3xl font-semibold text-ink">
         {mode === "register" ? "Take a seat" : "Welcome back"}
       </h1>
@@ -96,7 +96,7 @@ export default function AuthForm({ mode }: Props) {
         <button
           type="submit"
           disabled={busy}
-          className="mt-2 rounded-lg bg-mint py-2.5 font-semibold text-white hover:brightness-110 disabled:opacity-50"
+          className="mt-2 rounded-full bg-mint py-2.5 font-semibold text-white hover:brightness-110 disabled:opacity-50"
         >
           {busy
             ? "One moment"

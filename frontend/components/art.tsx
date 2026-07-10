@@ -49,7 +49,7 @@ export function PathNode({
 export function EmptySeat({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`w-36 rounded-xl border border-dashed border-line ${className}`}
+      className={`w-36 rounded-2xl border border-dashed border-line ${className}`}
       aria-hidden="true"
     >
       <div className="relative h-16">

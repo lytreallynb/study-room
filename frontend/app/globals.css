@@ -1,21 +1,35 @@
 @import "tailwindcss";
 
-/* StudySync visual system: a quiet, modern study cafe.
-   Paper white ground, graphite ink, one sage-green action color, warm
-   amber reserved for lamp light and focus. Hairline borders, real
-   whitespace, soft top-light. No drawn furniture; presence is told with
-   light and typography. */
+/* StudySync visual system: a study cafe by the sea.
+   A fixed morning-mist seascape sits behind everything; every surface is
+   liquid glass (backdrop blur, translucent fill, white hairline, large
+   radius) so the water shows through. Cool slate ink, one sage-green
+   action color, warm amber reserved for lamp light and focus. Presence
+   is still told with light and typography. */
 :root {
-  --paper: #faf9f6;
-  --surface: #ffffff;
-  --line: #e7e3da;
-  --ink: #24292b;
-  --muted: #7c837f;
+  --paper: #edf4f6; /* pale sea mist, the fallback ground */
+  --surface: rgba(255, 255, 255, 0.62); /* inputs and badges on glass */
+  --line: rgba(36, 52, 60, 0.14); /* cool hairline */
+  --ink: #24343c; /* slate ink */
+  --muted: #5c6e77; /* sea slate */
   --sun: #c98f4a; /* amber: lamp light, coins, focus */
   --sun-soft: #c98f4a1c;
   --mint: #5b7265; /* sage: primary actions, calm success */
   --coral: #c05b45; /* clay: errors, warnings */
   --wood: #b99b72; /* a thin line of oak, used sparingly */
+
+  /* --- the seascape ---
+     TODO: replace the gradient sea with your own photo. Drop the image at
+     frontend/public/seascape.jpg and change the line below to
+       --seascape-image: url("/seascape.jpg");
+     The gradient then only shows while the photo loads. Pick a calm,
+     low-saturation shot (morning mist or dusk) so the glass stays legible. */
+  --seascape-image: none;
+  --sea-sky: #e4edf1;
+  --sea-haze: #ccdde5;
+  --sea-horizon: #a3c3d0;
+  --sea-water: #85adbd;
+  --sea-shore: #6f9fb1;
 }
 
 @theme inline {
@@ -41,43 +55,128 @@ html {
 body {
   color: var(--ink);
   font-family: var(--font-schibsted), system-ui, sans-serif;
-  /* daylight from above, barely there */
-  background:
-    radial-gradient(
-      ellipse 90% 44% at 50% -6%,
-      rgba(217, 168, 100, 0.1) 0%,
-      rgba(217, 168, 100, 0) 70%
-    ),
-    var(--paper);
-  background-attachment: fixed;
 }
 
-/* faint paper grain so large fields never look flat-digital */
+/* the sea, fixed behind everything */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
+  z-index: -1;
   pointer-events: none;
-  opacity: 0.16;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.42 0 0 0 0 0.36 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image:
+    var(--seascape-image),
+    /* soft sun behind the haze */
+    radial-gradient(
+      ellipse 58% 40% at 70% 22%,
+      rgba(243, 222, 190, 0.5) 0%,
+      rgba(243, 222, 190, 0) 70%
+    ),
+    /* mist sitting on the horizon */
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 42%,
+      rgba(255, 255, 255, 0.45) 50%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    /* light lying on the water */
+    radial-gradient(
+      ellipse 46% 5% at 66% 62%,
+      rgba(255, 255, 255, 0.28) 0%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    radial-gradient(
+      ellipse 60% 4% at 40% 78%,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    /* sky into sea */
+    linear-gradient(
+      180deg,
+      var(--sea-sky) 0%,
+      var(--sea-haze) 36%,
+      var(--sea-horizon) 52%,
+      var(--sea-water) 72%,
+      var(--sea-shore) 100%
+    );
+  background-size: cover, auto, auto, auto, auto, auto;
+  background-position: center;
 }
 
-/* ---- surfaces ---- */
+/* a thin veil so ink stays readable over the water */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(240, 247, 249, 0.58) 0%,
+    rgba(240, 247, 249, 0.26) 45%,
+    rgba(240, 247, 249, 0.32) 100%
+  );
+}
 
-/* the standard card: white, hairline, one soft shadow */
+/* ---- surfaces: liquid glass ---- */
+
+/* the standard card: translucent, blurred, white hairline, big radius */
 .glass {
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid var(--line);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.58),
+    rgba(255, 255, 255, 0.34)
+  );
+  backdrop-filter: blur(16px) saturate(1.35);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow:
-    0 1px 2px rgba(36, 41, 43, 0.04),
-    0 12px 32px -20px rgba(36, 41, 43, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 14px 36px -18px rgba(30, 55, 68, 0.3);
+}
+
+/* interactive glass: a small rise and a brighter rim on hover */
+.glass-lift {
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.glass-lift:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 20px 44px -20px rgba(30, 55, 68, 0.38);
 }
 
 .glass-strong {
-  background: rgba(250, 249, 246, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+/* Small screens: mobile Safari pays dearly for wide blur radii. Halve the
+   blur and raise the fill opacity to compensate; visually near-identical,
+   much cheaper to composite. */
+@media (max-width: 640px) {
+  .glass {
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.72),
+      rgba(255, 255, 255, 0.52)
+    );
+    backdrop-filter: blur(8px) saturate(1.25);
+    -webkit-backdrop-filter: blur(8px) saturate(1.25);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(10px) saturate(1.25);
+    -webkit-backdrop-filter: blur(10px) saturate(1.25);
+  }
 }
 
 /* ---- the brand motif: a lamp line and the light it drops ----
@@ -107,9 +206,9 @@ body::before {
 /* warm wash a lit lamp leaves on the surface below it */
 .lamp-pool {
   background: radial-gradient(
-    ellipse 70% 100% at 50% 0%,
-    rgba(217, 168, 100, 0.16),
-    rgba(217, 168, 100, 0) 75%
+    ellipse 42% 100% at 50% 0%,
+    rgba(217, 168, 100, 0.15),
+    rgba(217, 168, 100, 0) 72%
   );
 }
 
@@ -136,6 +235,63 @@ body::before {
   background: linear-gradient(180deg, rgba(36, 41, 43, 0.04), rgba(36, 41, 43, 0));
 }
 
+/* ---- hallway: each room's window holds its own hour ----
+   Pane gradients echo the in-room window; the tile washes are what that
+   hour leaves on an empty room's wall. All lighter and cooler than the
+   amber focus wash, so an occupied room still reads first. */
+
+.pane-dawn {
+  background: linear-gradient(180deg, #eadfd8 0%, #d7e2e8 55%, #b3ccd7 100%);
+}
+
+.pane-noon {
+  background: linear-gradient(180deg, #dcecf2 0%, #bcd7e0 55%, #8fb3c2 100%);
+}
+
+.pane-dusk {
+  background: linear-gradient(180deg, #f0ddc0 0%, #ddbcab 55%, #9fadbe 100%);
+}
+
+.tile-dawn {
+  background: radial-gradient(
+    100% 120% at 50% 0%,
+    rgba(203, 182, 172, 0.22) 0%,
+    rgba(203, 182, 172, 0) 75%
+  );
+}
+
+.tile-noon {
+  background: radial-gradient(
+    100% 120% at 50% 0%,
+    rgba(168, 199, 212, 0.24) 0%,
+    rgba(168, 199, 212, 0) 75%
+  );
+}
+
+.tile-dusk {
+  background: radial-gradient(
+    100% 120% at 50% 0%,
+    rgba(205, 163, 144, 0.14) 0%,
+    rgba(205, 163, 144, 0) 75%
+  );
+}
+
+/* hovering a room card lets a little more light through its window */
+.pane-sheen {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  background: radial-gradient(
+    85% 95% at 50% 20%,
+    rgba(255, 244, 224, 0.85) 0%,
+    rgba(255, 244, 224, 0) 80%
+  );
+}
+
+.group:hover .pane-sheen,
+.group:focus-visible .pane-sheen {
+  opacity: 1;
+}
+
 /* steam wisp rising from a cup */
 .steam-wisp {
   width: 3px;
@@ -160,6 +316,227 @@ body::before {
   }
 }
 
+/* ---- character animations (all transform/opacity only) ---- */
+
+/* focusing: slow breathing, weight settling into the chair */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(1px) scaleY(0.97);
+  }
+}
+
+/* break: gentle sway while sipping */
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+/* idle: head-bob doze */
+@keyframes doze {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(6deg) translateY(2px);
+  }
+}
+
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes zzz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(6px, -14px) scale(1.1);
+  }
+}
+
+/* typing paws: quick alternate taps */
+@keyframes papertap {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+
+/* a book page mid-flip: swings up and settles */
+@keyframes pageflip {
+  0%,
+  62%,
+  100% {
+    transform: rotate(0deg);
+  }
+  70% {
+    transform: rotate(-24deg);
+  }
+  78% {
+    transform: rotate(4deg);
+  }
+  84% {
+    transform: rotate(0deg);
+  }
+}
+
+/* laptop / console screen light breathing on the face */
+@keyframes screenglow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  40% {
+    opacity: 0.9;
+  }
+  55% {
+    opacity: 0.65;
+  }
+  70% {
+    opacity: 0.95;
+  }
+}
+
+/* pen nib traveling along a line, then returning for the next one */
+@keyframes penline {
+  0% {
+    transform: translateX(0);
+  }
+  42% {
+    transform: translateX(9px);
+  }
+  50% {
+    transform: translateX(9px) translateY(1.5px);
+  }
+  92% {
+    transform: translateX(0) translateY(1.5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* gaming lean: small excited tilt */
+@keyframes gamelean {
+  0%,
+  100% {
+    transform: rotate(-1.5deg) translateY(0);
+  }
+  25% {
+    transform: rotate(1.5deg) translateY(-1px);
+  }
+  60% {
+    transform: rotate(-1deg) translateY(0.5px);
+  }
+}
+
+/* walking in through the door: slide to the seat with a step bob */
+@keyframes walkin {
+  0% {
+    opacity: 0;
+    transform: translateX(-56px) translateY(0);
+  }
+  20% {
+    transform: translateX(-42px) translateY(-3px);
+  }
+  40% {
+    transform: translateX(-28px) translateY(0);
+  }
+  60% {
+    transform: translateX(-15px) translateY(-3px);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-5px) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
+.anim-breathe {
+  animation: breathe 3.2s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+.anim-sway {
+  animation: sway 2.6s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+.anim-doze {
+  animation: doze 4s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+.anim-blink {
+  animation: blink 4.5s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.anim-zzz {
+  animation: zzz 2.4s ease-out infinite;
+}
+.anim-zzz-late {
+  animation: zzz 2.4s ease-out infinite;
+  animation-delay: 1.2s;
+}
+.anim-tap {
+  animation: papertap 0.34s ease-in-out infinite;
+  transform-box: fill-box;
+}
+.anim-tap-late {
+  animation: papertap 0.34s ease-in-out infinite;
+  animation-delay: 0.17s;
+  transform-box: fill-box;
+}
+.anim-pageflip {
+  animation: pageflip 5.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 0% 100%;
+}
+.anim-screenglow {
+  animation: screenglow 3.4s ease-in-out infinite;
+}
+.anim-penline {
+  animation: penline 2.8s ease-in-out infinite;
+  transform-box: fill-box;
+}
+.anim-gamelean {
+  animation: gamelean 1.6s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+.anim-walkin {
+  animation: walkin 0.9s ease-out both;
+}
+
 /* slow breath for anything lit */
 @keyframes lampglow {
   0%,
@@ -177,6 +554,15 @@ body::before {
 
 .status-lamp {
   animation: lampglow 4.5s ease-in-out infinite;
+}
+
+/* faint static gloss across an earned medal, catching the room light */
+.medal-gloss {
+  background-image: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.55) 8%,
+    rgba(255, 255, 255, 0) 46%
+  );
 }
 
 /* ---- reward + flashcard animations ---- */
@@ -218,6 +604,18 @@ body::before {
   }
 }
 
+/* the next card sliding quietly into place */
+@keyframes cardin {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes floatup {
   0% {
     opacity: 0;
@@ -252,6 +650,9 @@ body::before {
   animation: cardflip 0.3s ease-out both;
   transform-origin: 50% 85%;
 }
+.anim-cardin {
+  animation: cardin 0.25s ease-out both;
+}
 .anim-floatup {
   animation: floatup 1.3s ease-out both;
 }
@@ -264,11 +665,35 @@ body::before {
   .anim-coinpop,
   .anim-levelup,
   .anim-cardflip,
+  .anim-cardin,
   .anim-floatup,
   .anim-walkbob,
+  .anim-breathe,
+  .anim-sway,
+  .anim-doze,
+  .anim-blink,
+  .anim-zzz,
+  .anim-zzz-late,
+  .anim-tap,
+  .anim-tap-late,
+  .anim-pageflip,
+  .anim-screenglow,
+  .anim-penline,
+  .anim-gamelean,
+  .anim-walkin,
   .status-lamp,
   .steam-wisp {
     animation: none;
+  }
+
+  .glass-lift,
+  .glass-lift:hover {
+    transition: none;
+    transform: none;
+  }
+
+  .pane-sheen {
+    transition: none;
   }
 }
 

@@ -124,7 +124,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
   const paused = session?.status === "paused";
 
   const btn =
-    "rounded-lg px-5 py-2 text-sm font-semibold disabled:opacity-50 transition-colors";
+    "rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-50 transition duration-200 active:scale-[0.97]";
 
   return (
     <section className="glass relative overflow-hidden rounded-2xl p-6">
@@ -147,7 +147,7 @@ export default function SessionTimer({ roomId, onPresenceChange }: Props) {
       </h2>
 
       <p
-        className={`mt-3 font-mono text-5xl tabular-nums ${
+        className={`mt-3 font-mono text-5xl tabular-nums transition-colors duration-500 ${
           running && !paused ? "text-sun" : "text-ink"
         }`}
         aria-live="off"

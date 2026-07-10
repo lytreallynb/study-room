@@ -40,7 +40,7 @@ const SPECIES_PALETTES: Array<{
   { species: "owl", body: "#B09876", bodyDark: "#8F7856", belly: "#E7DCC6" },
 ];
 
-function fnv1a(str: string): number {
+export function fnv1a(str: string): number {
   let h = 0x811c9dc5;
   for (let i = 0; i < str.length; i++) {
     h ^= str.charCodeAt(i);
@@ -53,4 +53,23 @@ export function characterLook(userId: string): CharacterLook {
   const seed = fnv1a(userId);
   const palette = SPECIES_PALETTES[seed % SPECIES_PALETTES.length];
   return { ...palette, seed };
+}
+
+// What this person is doing while they focus. Derived from the same seed
+// (shifted so it does not correlate with species), so the same user does
+// the same thing at every desk on every client.
+export type Activity = "reading" | "coding" | "gaming" | "writing";
+
+const ACTIVITIES: Activity[] = ["reading", "coding", "gaming", "writing"];
+
+export const ACTIVITY_LABEL: Record<Activity, string> = {
+  reading: "reading",
+  coding: "writing code",
+  gaming: "playing a game",
+  writing: "taking notes",
+};
+
+export function activityFor(userId: string): Activity {
+  const seed = fnv1a(userId);
+  return ACTIVITIES[(seed >>> 3) % ACTIVITIES.length];
 }

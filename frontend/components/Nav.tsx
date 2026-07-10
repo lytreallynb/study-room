@@ -19,7 +19,7 @@ export default function Nav() {
 
   return (
     <header className="glass-strong sticky top-0 z-20">
-      <nav className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-4">
+      <nav className="mx-auto flex min-h-14 max-w-5xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 sm:gap-x-6 sm:py-0">
         <Link
           href="/"
           className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink"
@@ -58,13 +58,13 @@ export default function Nav() {
           {status === "authenticated" && user ? (
             <>
               <span
-                className="flex items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1 font-mono text-xs text-sun"
+                className="flex items-center gap-1.5 rounded-full border border-white/60 bg-surface px-3 py-1 font-mono text-xs text-sun"
                 title="Coins earned from focus and word practice"
               >
                 <CoinIcon className="h-3.5 w-3.5" />
                 {user.coins}
               </span>
-              <span className="rounded-md border border-line bg-surface px-2.5 py-1 font-mono text-xs text-mint">
+              <span className="rounded-full border border-white/60 bg-surface px-3 py-1 font-mono text-xs text-mint">
                 lv {user.level}
               </span>
               <span className="hidden text-muted sm:inline">
@@ -81,7 +81,7 @@ export default function Nav() {
               </Link>
               <Link
                 href="/register"
-                className="rounded-lg bg-mint px-4 py-1.5 font-semibold text-white hover:brightness-110"
+                className="rounded-full bg-mint px-4 py-1.5 font-semibold text-white hover:brightness-110"
               >
                 Take a seat
               </Link>
