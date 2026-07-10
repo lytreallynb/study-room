@@ -26,3 +26,6 @@ dist/
 
 # Logs
 *.log
+
+# vercel project link
+.vercel/
