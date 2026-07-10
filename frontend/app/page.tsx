@@ -1,8 +1,7 @@
 "use client";
 
-// The landing is a running room, seen in cross-section: a glass wall with
-// drifting morning light and a sweeping clock, three occupied desks on the
-// floor, and one vacant desk in the foreground that is yours to take.
+// One screen: a headline, two actions, and the room itself, live, resting
+// on a single line of oak. Whitespace does the rest.
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,49 +9,7 @@ import { useEffect } from "react";
 
 import Character from "../components/Character";
 import Nav from "../components/Nav";
-import { WallClock, WindowWall } from "../components/scene";
 import { useAuth } from "../lib/auth";
-
-/* The empty seat in the foreground: the way in. Hovering or focusing the
-   link warms the lamp and slides the chair back in, like sitting down. */
-function VacantSeat() {
-  return (
-    <Link
-      href="/register"
-      className="group relative block w-40 rounded-lg"
-    >
-      <div className="relative h-24" aria-hidden="true">
-        {/* pulled-out chair eases back under the desk when you reach for it */}
-        <div className="pod-chair absolute bottom-7 left-[38%] h-10 w-14 -translate-x-1/2 rotate-[-7deg] opacity-90 transition-transform duration-500 group-hover:translate-x-[6px] group-hover:rotate-[-2deg] group-focus-visible:translate-x-[6px]" />
-        {/* warm pool appears on the desk as the lamp comes on */}
-        <div className="pod-poollight absolute bottom-8 left-4 h-4 w-24 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100" />
-        {/* desk */}
-        <div className="absolute inset-x-0 bottom-2 h-7">
-          <div className="pod-desk-top absolute inset-x-0 top-0 h-3" />
-          <div className="pod-desk-front absolute inset-x-1 bottom-0 top-3" />
-        </div>
-        {/* the lamp, waiting; it lights on approach */}
-        <div className="absolute bottom-8 left-3 h-11 w-8">
-          <div className="absolute bottom-0 left-0 h-1 w-4 rounded-sm bg-ink/45" />
-          <div className="absolute bottom-0 left-1 h-8 w-[2.5px] rounded-full bg-ink/50" />
-          <div
-            className="absolute left-1 top-1.5 h-[2.5px] w-5 rounded-full bg-ink/50"
-            style={{ transform: "rotate(18deg)", transformOrigin: "0 50%" }}
-          />
-          <div
-            className="absolute right-1 top-2.5 h-2.5 w-3.5 rounded-sm bg-ink/40 transition-colors duration-500 group-hover:bg-sun group-focus-visible:bg-sun"
-            style={{ transform: "rotate(18deg)" }}
-          />
-        </div>
-        <div className="absolute inset-x-5 bottom-0 h-2 rounded-full bg-ink/10 blur-[3px]" />
-      </div>
-      {/* the seat plate doubles as the action */}
-      <span className="mt-1 block rounded-lg bg-mint px-4 py-2 text-center text-sm font-semibold text-white shadow-[0_4px_14px_-4px_rgba(62,107,92,0.6)] transition-[filter] group-hover:brightness-110">
-        Take a seat
-      </span>
-    </Link>
-  );
-}
 
 export default function LandingPage() {
   const { status } = useAuth();
@@ -65,42 +22,48 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Nav />
-      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center px-4 py-8">
-        <section className="glass overflow-hidden rounded-2xl">
-          {/* background: the glass wall, light on the move */}
-          <div className="relative">
-            <WindowWall className="h-32 sm:h-52" />
-            {/* the clock hangs on the wall, over the frame */}
-            <div className="absolute left-1/2 top-3 -translate-x-1/2 sm:top-4">
-              <WallClock className="h-14 w-14 sm:h-16 sm:w-16" />
-            </div>
-          </div>
-
-          {/* midground: the occupied row, desks on the floor */}
-          <div className="room-floor relative px-4 pb-3 pt-6 sm:pb-4 sm:pt-8">
-            <div className="flex flex-wrap items-end justify-center gap-x-1 gap-y-4 sm:gap-x-6">
-              <Character userId="demo-momo" displayName="momo" status="focusing" />
-              <Character userId="demo-juno" displayName="juno" status="break" />
-              <Character userId="demo-pip" displayName="pip" status="idle" />
-            </div>
-          </div>
-
-          {/* foreground: your vacant desk, closest to the viewer */}
-          <div className="relative border-t border-line/60 bg-gradient-to-b from-paper to-[#e9e1cd] px-6 pb-8 pt-4 sm:pb-7 sm:pt-5">
-            <div className="flex flex-col items-center gap-x-10 gap-y-3 sm:flex-row sm:justify-center">
-              <p className="max-w-[210px] text-center font-display text-xl leading-snug text-ink sm:text-left">
-                The corner desk is free.
-              </p>
-              <VacantSeat />
-            </div>
+      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-4 pb-16 pt-10">
+        <div className="text-center">
+          <h1 className="font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl">
+            The room is open.
+          </h1>
+          <p className="mx-auto mt-3 max-w-md text-base text-muted">
+            Sit down with people who are really studying.
+          </p>
+          <div className="mt-7 flex items-center justify-center gap-3">
+            <Link
+              href="/register"
+              className="rounded-lg bg-mint px-6 py-2.5 font-semibold text-white transition-[filter] hover:brightness-110"
+            >
+              Take a seat
+            </Link>
             <Link
               href="/login"
-              className="absolute bottom-3 right-4 text-xs text-muted underline-offset-2 hover:text-ink hover:underline"
+              className="rounded-lg px-4 py-2.5 font-medium text-muted transition-colors hover:text-ink"
             >
-              I already have a desk, log in
+              Log in
             </Link>
           </div>
-        </section>
+        </div>
+
+        {/* the room, live: three desks under their lamps on one oak line */}
+        <div className="relative mt-16 sm:mt-20">
+          {/* daylight falling on the desks */}
+          <div
+            className="lamp-pool pointer-events-none absolute -top-12 left-1/2 h-24 w-[110%] max-w-xl -translate-x-1/2"
+            aria-hidden="true"
+          />
+          <div className="relative flex flex-wrap items-end justify-center gap-4 sm:gap-8">
+            <Character userId="demo-momo" displayName="momo" status="focusing" />
+            <Character userId="demo-juno" displayName="juno" status="break" />
+            <Character userId="demo-pip" displayName="pip" status="idle" />
+          </div>
+          {/* the desk: one line of oak with its shadow */}
+          <div className="mx-auto mt-5 max-w-xl" aria-hidden="true">
+            <div className="h-[3px] rounded-full bg-wood/70" />
+            <div className="mx-6 h-2 rounded-[50%] bg-ink/[0.07] blur-[2px]" />
+          </div>
+        </div>
       </main>
     </div>
   );

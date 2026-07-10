@@ -33,24 +33,6 @@ const STOPS: Stop[] = [
   { level: 20, name: "Horizon Point", blurb: "Legend of the seaside study room." },
 ];
 
-function FloorFurniture({ lit }: { lit: boolean }) {
-  return (
-    <span className="relative hidden h-8 w-16 shrink-0 sm:block" aria-hidden="true">
-      {lit && (
-        <span className="pod-poollight anim-lampglow absolute bottom-2.5 left-2 h-3 w-10" />
-      )}
-      <span className="pod-desk-top absolute bottom-1.5 left-1 h-1.5 w-12" />
-      <span className="pod-desk-front absolute bottom-0 left-2 h-1.5 w-10" />
-      <span className="absolute bottom-3 left-3 h-4 w-[2px] rounded-full bg-ink/50" />
-      <span
-        className={`absolute bottom-6 left-3.5 h-1.5 w-2.5 rounded-sm ${
-          lit ? "status-lamp bg-sun" : "bg-ink/40"
-        }`}
-      />
-    </span>
-  );
-}
-
 function YouMarker({ userId, name }: { userId: string; name: string }) {
   const look = characterLook(userId);
   return (
@@ -185,7 +167,12 @@ function AdventureView() {
                         </p>
                       )}
                     </div>
-                    <FloorFurniture lit={reached} />
+                    <span
+                      className={`mb-1 hidden h-2 w-2 shrink-0 rounded-full sm:block ${
+                        reached ? "status-lamp bg-sun" : "bg-line"
+                      }`}
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
               </li>

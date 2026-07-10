@@ -45,27 +45,22 @@ export function PathNode({
   );
 }
 
-/* --- empty state: an unlit desk waiting for someone --- */
-export function EmptyDesk({ className = "h-24 w-48" }: { className?: string }) {
+/* --- empty state: an unlit seat, waiting --- */
+export function EmptySeat({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 200 100" className={className} aria-hidden="true">
-      {/* wall shadow */}
-      <ellipse cx="100" cy="88" rx="80" ry="7" fill="var(--ink)" opacity="0.06" />
-      {/* desk: top face + front edge, slight perspective */}
-      <path d="M40 62 L160 62 L154 72 L46 72 Z" fill="#D9C7A2" />
-      <rect x="46" y="72" width="108" height="5" rx="1" fill="#C2AC83" />
-      <path d="M52 77 l-2 12 M148 77 l2 12" stroke="#B29C74" strokeWidth="3" strokeLinecap="round" />
-      {/* unlit lamp */}
-      <path
-        d="M66 62 V47 L74 42"
-        stroke="var(--muted)"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <circle cx="75" cy="41" r="3" fill="var(--muted)" opacity="0.5" />
-      {/* closed book */}
-      <rect x="108" y="56" width="26" height="5" rx="1.2" fill="var(--mint)" opacity="0.55" />
-    </svg>
+    <div
+      className={`w-36 rounded-xl border border-dashed border-line ${className}`}
+      aria-hidden="true"
+    >
+      <div className="relative h-16">
+        <div className="absolute left-1/2 top-0 h-[3px] w-10 -translate-x-1/2 rounded-b-full bg-line" />
+        <div className="absolute bottom-2.5 left-1/2 h-9 w-9 -translate-x-1/2 rounded-full border border-dashed border-line" />
+      </div>
+      <div className="border-t border-dashed border-line px-2.5 pb-2 pt-1.5 text-center">
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted/60">
+          empty seat
+        </span>
+      </div>
+    </div>
   );
 }

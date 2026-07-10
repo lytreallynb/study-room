@@ -7,8 +7,7 @@ import Link from "next/link";
 import { use, useCallback, useEffect, useState } from "react";
 
 import Character from "../../../components/Character";
-import { EmptyDesk } from "../../../components/art";
-import { WallClock, WindowWall } from "../../../components/scene";
+import { EmptySeat } from "../../../components/art";
 import Nav from "../../../components/Nav";
 import RequireAuth from "../../../components/RequireAuth";
 import SessionTimer from "../../../components/SessionTimer";
@@ -86,19 +85,15 @@ function RoomView({ roomId }: { roomId: string }) {
       <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_320px]">
         {/* the room: dawn window up top, desks on the floor below */}
         <section
-          className="glass flex flex-col overflow-hidden rounded-2xl"
+          className="glass relative flex flex-col overflow-hidden rounded-2xl"
           aria-label="People in this room"
         >
-          <div className="relative">
-            <WindowWall className="h-24 sm:h-32" />
-            <div className="absolute right-4 top-3">
-              <WallClock className="h-12 w-12" />
-            </div>
-          </div>
-          <div className="room-floor min-h-[280px] flex-1 px-5 pb-6 pt-8">
+          {/* daylight across the seat area */}
+          <div className="lamp-pool pointer-events-none absolute inset-x-0 top-0 h-28" aria-hidden="true" />
+          <div className="relative min-h-[300px] flex-1 px-5 py-7 sm:px-7">
           {members.length === 0 ? (
             <div className="flex h-full min-h-[240px] flex-col items-center justify-center text-center">
-              <EmptyDesk />
+              <EmptySeat />
               <p className="mt-4 text-muted">
                 {connState === "live"
                   ? "The room is empty and dark."
@@ -111,7 +106,7 @@ function RoomView({ roomId }: { roomId: string }) {
               )}
             </div>
           ) : (
-            <div className="flex flex-wrap items-end justify-center gap-x-2 gap-y-6 sm:justify-start">
+            <div className="flex flex-wrap items-start justify-center gap-4 sm:justify-start sm:gap-5">
               {members.map((m) => (
                 <Character
                   key={m.user_id}
